@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = 'force-dynamic';
+
 // TODO: Re-enable Anthropic AI when package is added back
 // import Anthropic from "@anthropic-ai/sdk";
 // const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });

@@ -10,7 +10,7 @@ const schema = z.object({
   month: z.number().min(1).max(12),
   year: z.number().min(2020),
 });
-
+export const dynamic = 'force-dynamic';
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

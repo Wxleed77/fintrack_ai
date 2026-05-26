@@ -9,6 +9,8 @@ const schema = z.object({
   password: z.string().min(8),
 });
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
