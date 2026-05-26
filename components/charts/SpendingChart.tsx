@@ -3,7 +3,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { CategoryBreakdown } from "@/types";
 import { formatCurrency } from "@/lib/utils";
 
-export function SpendingChart({ data }: { data: CategoryBreakdown[] }) {
+export function SpendingChart({ data, isLoading }: { data: CategoryBreakdown[]; isLoading?: boolean }) {
   return (
     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-5">
       <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Spending Breakdown</h3>

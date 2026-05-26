@@ -4,12 +4,12 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 import { Transaction } from "@/types";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 
-export function RecentTransactions({ transactions }: { transactions: Transaction[] }) {
+export function RecentTransactions({ transactions, isLoading }: { transactions: Transaction[]; isLoading?: boolean }) {
   return (
     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-5">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-gray-900 dark:text-white">Recent Transactions</h3>
-        <Link href="/transactions" className="text-xs text-emerald-600 hover:text-emerald-700 font-medium">View all</Link>
+        <Link href="/dashboard/transactions" className="text-xs text-emerald-600 hover:text-emerald-700 font-medium">View all</Link>
       </div>
       <div className="space-y-3">
         {transactions.length === 0 ? (

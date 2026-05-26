@@ -2,7 +2,7 @@
 import { formatCurrency } from "@/lib/utils";
 import { Budget, CategoryBreakdown } from "@/types";
 
-export function BudgetOverview({ budgets, spending }: { budgets: Budget[]; spending: CategoryBreakdown[] }) {
+export function BudgetOverview({ budgets, spending, isLoading }: { budgets: Budget[]; spending: CategoryBreakdown[]; isLoading?: boolean }) {
   const spendMap = Object.fromEntries(spending.map(s => [s.category, s.amount]));
 
   return (

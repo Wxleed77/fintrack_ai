@@ -3,12 +3,12 @@ import Link from "next/link";
 import { SavingsGoal } from "@/types";
 import { formatCurrency } from "@/lib/utils";
 
-export function GoalsWidget({ goals }: { goals: SavingsGoal[] }) {
+export function GoalsWidget({ goals, isLoading }: { goals: SavingsGoal[]; isLoading?: boolean }) {
   return (
     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-5">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-gray-900 dark:text-white">Savings Goals</h3>
-        <Link href="/goals" className="text-xs text-emerald-600 font-medium">View all</Link>
+        <Link href="/dashboard/goals" className="text-xs text-emerald-600 font-medium">View all</Link>
       </div>
       <div className="space-y-3">
         {goals.slice(0, 3).map((goal) => {

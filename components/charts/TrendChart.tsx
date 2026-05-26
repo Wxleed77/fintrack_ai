@@ -3,7 +3,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { MonthlyTrend } from "@/types";
 import { formatCurrency } from "@/lib/utils";
 
-export function TrendChart({ data }: { data: MonthlyTrend[] }) {
+export function TrendChart({ data, isLoading }: { data: MonthlyTrend[]; isLoading?: boolean }) {
   return (
     <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-5">
       <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Income vs Expenses (6 months)</h3>

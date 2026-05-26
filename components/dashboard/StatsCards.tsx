@@ -4,9 +4,10 @@ import { formatCurrency } from "@/lib/utils";
 
 interface Props {
   summary?: { income: number; expenses: number; savings: number; savingsRate: number };
+  isLoading?: boolean;
 }
 
-export function StatsCards({ summary }: Props) {
+export function StatsCards({ summary, isLoading }: Props) {
   const cards = [
     {
       label: "Monthly Income",
