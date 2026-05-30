@@ -5,10 +5,6 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = 'force-dynamic';
 
-const client = new OpenRouter({
-  apiKey: process.env.OPENROUTER_API_KEY,
-});
-
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
