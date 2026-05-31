@@ -1,7 +1,8 @@
 "use client";
 import { signOut } from "next-auth/react";
-import { Bell, LogOut, User, Moon, Sun } from "lucide-react";
+import { Bell, LogOut, Moon, Sun } from "lucide-react";
 import { useState } from "react";
+import { useTheme } from "./ThemeProvider";
 import { AddTransactionModal } from "@/components/forms/AddTransactionModal";
 
 interface HeaderProps {
@@ -10,6 +11,7 @@ interface HeaderProps {
 
 export function Header({ user }: HeaderProps) {
   const [showModal, setShowModal] = useState(false);
+  const { theme, toggleTheme } = useTheme();
   const initials = user.name?.split(" ").map(n => n[0]).join("").toUpperCase() || "U";
 
   return (
@@ -32,6 +34,17 @@ export function Header({ user }: HeaderProps) {
           </button>
           <button className="p-1.5 lg:p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors">
             <Bell className="h-4 w-4 lg:h-5 lg:w-5" />
+          </button>
+          <button
+            onClick={toggleTheme}
+            className="p-1.5 lg:p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+          >
+            {theme === "light" ? (
+              <Moon className="h-4 w-4 lg:h-5 lg:w-5" />
+            ) : (
+              <Sun className="h-4 w-4 lg:h-5 lg:w-5" />
+            )}
           </button>
           <div className="flex items-center gap-1 lg:gap-2 pl-2 lg:pl-3 border-l border-gray-100 dark:border-gray-800">
             <div className="h-7 w-7 lg:h-8 lg:w-8 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center text-xs font-medium text-emerald-700 dark:text-emerald-300">
