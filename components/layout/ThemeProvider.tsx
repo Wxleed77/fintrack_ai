@@ -10,7 +10,6 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<"light" | "dark">("light");
-  const [mounted, setMounted] = useState(false);
 
   // Initialize theme from localStorage or system preference
   useEffect(() => {
@@ -26,8 +25,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       setTheme(systemTheme);
       applyTheme(systemTheme);
     }
-    
-    setMounted(true);
   }, []);
 
   const applyTheme = (newTheme: "light" | "dark") => {
@@ -45,11 +42,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("theme", newTheme);
     applyTheme(newTheme);
   };
-
-  // Prevent flash of wrong theme
-  if (!mounted) {
-    return <>{children}</>;
-  }
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
