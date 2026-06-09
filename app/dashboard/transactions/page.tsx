@@ -42,12 +42,12 @@ export default function TransactionsPage() {
       <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-4">
         <div className="flex gap-3 items-center">
           <Filter className="h-4 w-4 text-gray-400" />
-          <select value={filter.type} onChange={e => setFilter(f => ({ ...f, type: e.target.value }))} className="border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5 text-sm bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          <select value={filter.type} onChange={e => setFilter(f => ({ ...f, type: e.target.value }))} className="border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
             <option value="">All Types</option>
             <option value="INCOME">Income</option>
             <option value="EXPENSE">Expense</option>
           </select>
-          <select value={filter.category} onChange={e => setFilter(f => ({ ...f, category: e.target.value }))} className="border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5 text-sm bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          <select value={filter.category} onChange={e => setFilter(f => ({ ...f, category: e.target.value }))} className="border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
             <option value="">All Categories</option>
             {[...INCOME_CATEGORIES, ...EXPENSE_CATEGORIES].map(c => <option key={c} value={c}>{c}</option>)}
           </select>
