@@ -36,7 +36,7 @@ export default function BudgetsPage() {
           <div key={budget.id} className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-5">
             <div className="flex justify-between items-center mb-3">
               <h3 className="font-semibold text-gray-900 dark:text-white">{budget.category}</h3>
-              <span className="text-sm text-gray-500">Limit: {formatCurrency(budget.limitAmount)}</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">Limit: {formatCurrency(budget.limitAmount)}</span>
             </div>
           </div>
         ))}

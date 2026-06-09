@@ -28,7 +28,7 @@ export default function LoginPage() {
             <TrendingUp className="h-6 w-6 text-emerald-600" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">FinTrack AI</h1>
-          <p className="text-gray-500 mt-1">Sign in to your account</p>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Sign in to your account</p>
         </div>
         <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
           <form onSubmit={onSubmit} className="space-y-4">
@@ -45,7 +45,7 @@ export default function LoginPage() {
               {loading ? "Signing in..." : "Sign in"}
             </button>
           </form>
-          <p className="text-center text-sm text-gray-500 mt-4">
+          <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
             Don't have an account? <Link href="/auth/register" className="text-emerald-600 font-medium hover:text-emerald-700">Register</Link>
           </p>
           <div className="mt-4 pt-4 border-t border-gray-100">

@@ -26,7 +26,7 @@ export function SpendingChart({ data, isLoading }: { data: CategoryBreakdown[]; 
                   <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
                   <span className="text-gray-600 dark:text-gray-400">{item.category}</span>
                 </div>
-                <span className="text-gray-500">{item.percentage}%</span>
+                <span className="text-gray-500 dark:text-gray-400">{item.percentage}%</span>
               </div>
             ))}
           </div>

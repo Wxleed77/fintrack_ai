@@ -35,7 +35,7 @@ export default function TransactionsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Transactions</h1>
-          <p className="text-sm text-gray-500">{total} total records</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{total} total records</p>
         </div>
       </div>
 
@@ -56,9 +56,9 @@ export default function TransactionsPage() {
 
       <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 divide-y divide-gray-50 dark:divide-gray-800">
         {loading ? (
-          <p className="text-sm text-gray-400 text-center py-12">Loading...</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-12">Loading...</p>
         ) : transactions.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center py-12">No transactions found</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-12">No transactions found</p>
         ) : transactions.map(txn => (
           <div key={txn.id} className="flex items-center gap-4 p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
             <div className={`p-2 rounded-lg ${txn.type === "INCOME" ? "bg-emerald-50 dark:bg-emerald-950" : "bg-red-50 dark:bg-red-950"}`}>
@@ -66,7 +66,7 @@ export default function TransactionsPage() {
             </div>
             <div className="flex-1">
               <p className="text-sm font-medium text-gray-900 dark:text-white">{txn.description}</p>
-              <p className="text-xs text-gray-400">{txn.category} · {txn.paymentMethod} · {formatDate(txn.date)}</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500">{txn.category} · {txn.paymentMethod} · {formatDate(txn.date)}</p>
             </div>
             <span className={`text-sm font-semibold ${txn.type === "INCOME" ? "text-emerald-600" : "text-red-500"}`}>
               {txn.type === "INCOME" ? "+" : "-"}{formatCurrency(txn.amount)}

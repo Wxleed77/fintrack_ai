@@ -17,7 +17,7 @@ export function GoalsWidget({ goals, isLoading }: { goals: SavingsGoal[]; isLoad
             <div key={goal.id}>
               <div className="flex justify-between text-xs mb-1">
                 <span className="font-medium text-gray-700 dark:text-gray-300">{goal.goalName}</span>
-                <span className="text-gray-500">{pct}%</span>
+                <span className="text-gray-500 dark:text-gray-400">{pct}%</span>
               </div>
               <div className="h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                 <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: goal.color }} />

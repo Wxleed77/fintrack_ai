@@ -26,7 +26,7 @@ export default function RegisterPage() {
             <TrendingUp className="h-6 w-6 text-emerald-600" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Create account</h1>
-          <p className="text-gray-500 mt-1">Start tracking your finances</p>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Start tracking your finances</p>
         </div>
         <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
           <form onSubmit={onSubmit} className="space-y-4">
@@ -46,7 +46,7 @@ export default function RegisterPage() {
               {loading ? "Creating..." : "Create account"}
             </button>
           </form>
-          <p className="text-center text-sm text-gray-500 mt-4">
+          <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
             Already have an account? <Link href="/auth/login" className="text-emerald-600 font-medium hover:text-emerald-700">Sign in</Link>
           </p>
         </div>

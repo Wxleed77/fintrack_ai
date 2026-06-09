@@ -158,7 +158,7 @@ export default function SettingsPage() {
                 disabled
                 className="w-full px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none cursor-not-allowed opacity-50"
               />
-              <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Email cannot be changed</p>
             </div>
             <button
               type="submit"
@@ -229,7 +229,7 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between p-4 border border-gray-100 dark:border-gray-700 rounded-lg">
               <div>
                 <p className="font-medium text-gray-900 dark:text-white">Email Notifications</p>
-                <p className="text-sm text-gray-500">Get updates about your finances</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Get updates about your finances</p>
               </div>
               <button
                 onClick={() => setPreferences({ ...preferences, emailNotifications: !preferences.emailNotifications })}

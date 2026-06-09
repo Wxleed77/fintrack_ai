@@ -43,7 +43,7 @@ export function AddTransactionModal({ onClose, onSuccess }: Props) {
       <div className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-md p-6 shadow-xl" onClick={e => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-5">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Add Transaction</h2>
-          <button onClick={onClose} className="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+          <button onClick={onClose} className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -53,7 +53,7 @@ export function AddTransactionModal({ onClose, onSuccess }: Props) {
             {["EXPENSE", "INCOME"].map(t => (
               <label key={t} className="flex-1 relative">
                 <input type="radio" value={t} {...register("type")} className="sr-only" />
-                <span className={`block text-center text-sm py-1.5 rounded-md cursor-pointer transition-colors ${type === t ? "bg-white dark:bg-gray-700 font-medium shadow-sm text-gray-900 dark:text-white" : "text-gray-500"}`}>
+                <span className={`block text-center text-sm py-1.5 rounded-md cursor-pointer transition-colors ${type === t ? "bg-white dark:bg-gray-700 font-medium shadow-sm text-gray-900 dark:text-white" : "text-gray-500 dark:text-gray-400"}`}>
                   {t === "INCOME" ? "Income" : "Expense"}
                 </span>
               </label>

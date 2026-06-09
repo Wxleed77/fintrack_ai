@@ -39,7 +39,7 @@ export function AIInsights() {
           <h3 className="font-semibold text-gray-900 dark:text-white text-sm">AI Insights</h3>
         </div>
         {loaded && (
-          <button onClick={load} className="p-1 text-gray-400 hover:text-emerald-600 transition-colors">
+          <button onClick={load} className="p-1 text-gray-400 dark:text-gray-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">
             <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
           </button>
         )}

@@ -13,7 +13,7 @@ export function RecentTransactions({ transactions, isLoading }: { transactions: 
       </div>
       <div className="space-y-3">
         {transactions.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center py-4">No transactions yet</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-4">No transactions yet</p>
         ) : (
           transactions.map((txn) => (
             <div key={txn.id} className="flex items-center gap-3">
@@ -24,7 +24,7 @@ export function RecentTransactions({ transactions, isLoading }: { transactions: 
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{txn.description}</p>
-                <p className="text-xs text-gray-400">{txn.category} · {formatDate(txn.date)}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500">{txn.category} · {formatDate(txn.date)}</p>
               </div>
               <span className={`text-sm font-semibold ${txn.type === "INCOME" ? "text-emerald-600" : "text-red-500"}`}>
                 {txn.type === "INCOME" ? "+" : "-"}{formatCurrency(txn.amount)}

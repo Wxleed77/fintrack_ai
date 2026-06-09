@@ -21,7 +21,7 @@ export function Header({ user }: HeaderProps) {
           <h1 className="text-sm font-medium text-gray-900 dark:text-white">
             Good morning, {user.name?.split(" ")[0]} 👋
           </h1>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
             {new Date().toLocaleDateString("en-PK", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
           </p>
         </div>
@@ -32,12 +32,12 @@ export function Header({ user }: HeaderProps) {
           >
             + Add
           </button>
-          <button className="p-1.5 lg:p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors">
+          <button className="p-1.5 lg:p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors">
             <Bell className="h-4 w-4 lg:h-5 lg:w-5" />
           </button>
           <button
             onClick={toggleTheme}
-            className="p-1.5 lg:p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            className="p-1.5 lg:p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors"
             title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
           >
             {theme === "light" ? (
