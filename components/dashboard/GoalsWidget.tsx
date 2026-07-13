@@ -2,31 +2,65 @@
 import Link from "next/link";
 import { SavingsGoal } from "@/types";
 import { formatCurrency } from "@/lib/utils";
+import { Target, ExternalLink } from "lucide-react";
 
 export function GoalsWidget({ goals, isLoading }: { goals: SavingsGoal[]; isLoading?: boolean }) {
-  return (
-    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-5">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-gray-900 dark:text-white">Savings Goals</h3>
-        <Link href="/dashboard/goals" className="text-xs text-emerald-600 font-medium">View all</Link>
+  if (isLoading) {
+    return (
+      <div className="card p-5 space-y-4">
+        <div className="skeleton h-5 w-32" />
+        {[1, 2].map(i => (
+          <div key={i} className="space-y-2">
+            <div className="skeleton h-3.5 w-full" />
+            <div className="skeleton h-2 w-full" />
+          </div>
+        ))}
       </div>
-      <div className="space-y-3">
+    );
+  }
+
+  return (
+    <div className="card p-5">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-display font-semibold text-[var(--text-primary)]">Savings Goals</h3>
+        <Link
+          href="/dashboard/goals"
+          className="text-xs font-medium text-emerald-500 hover:text-emerald-600 transition-colors inline-flex items-center gap-1"
+        >
+          View all
+          <ExternalLink className="h-3 w-3" />
+        </Link>
+      </div>
+      <div className="space-y-4">
         {goals.slice(0, 3).map((goal) => {
           const pct = Math.min(Math.round((goal.currentAmount / goal.targetAmount) * 100), 100);
           return (
             <div key={goal.id}>
-              <div className="flex justify-between text-xs mb-1">
-                <span className="font-medium text-gray-700 dark:text-gray-300">{goal.goalName}</span>
-                <span className="text-gray-500 dark:text-gray-400">{pct}%</span>
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: goal.color }} />
+                  <span className="text-xs font-medium text-[var(--text-primary)]">{goal.goalName}</span>
+                </div>
+                <span className="text-xs font-semibold text-[var(--text-secondary)] num">{pct}%</span>
               </div>
-              <div className="h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: goal.color }} />
+              <div className="progress-bar">
+                <div
+                  className="progress-bar-fill"
+                  style={{ width: `${pct}%`, backgroundColor: goal.color }}
+                />
               </div>
-              <p className="text-xs text-gray-400 mt-1">{formatCurrency(goal.currentAmount)} of {formatCurrency(goal.targetAmount)}</p>
+              <p className="text-xs text-[var(--text-tertiary)] mt-1.5 num">
+                {formatCurrency(goal.currentAmount)} of {formatCurrency(goal.targetAmount)}
+              </p>
             </div>
           );
         })}
-        {goals.length === 0 && <p className="text-sm text-gray-400 text-center py-2">No goals set</p>}
+        {goals.length === 0 && (
+          <div className="text-center py-4">
+            <Target className="h-8 w-8 text-[var(--text-tertiary)] mx-auto mb-2" />
+            <p className="text-sm text-[var(--text-tertiary)]">No goals set</p>
+          </div>
+        )}
       </div>
     </div>
   );

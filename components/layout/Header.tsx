@@ -1,6 +1,6 @@
 "use client";
 import { signOut } from "next-auth/react";
-import { Bell, LogOut, Moon, Sun } from "lucide-react";
+import { Bell, LogOut, Moon, Sun, Plus } from "lucide-react";
 import { useState } from "react";
 import { useTheme } from "./ThemeProvider";
 import { AddTransactionModal } from "@/components/forms/AddTransactionModal";
@@ -16,43 +16,43 @@ export function Header({ user }: HeaderProps) {
 
   return (
     <>
-      <header className="fixed lg:static top-0 left-0 right-0 z-40 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 lg:px-6 py-2 lg:py-3 flex items-center justify-between">
+      <header className="sticky top-0 z-30 bg-[var(--bg-card)] border-b border-[var(--border-card)] px-4 lg:px-6 py-3 flex items-center justify-between">
+        {/* Left */}
         <div className="hidden lg:block">
-          <h1 className="text-sm font-medium text-gray-900 dark:text-white">
+          <h2 className="text-sm font-medium text-[var(--text-primary)]">
             Good morning, {user.name?.split(" ")[0]} 👋
-          </h1>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          </h2>
+          <p className="text-xs text-[var(--text-tertiary)]">
             {new Date().toLocaleDateString("en-PK", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
           </p>
         </div>
-        <div className="flex items-center gap-2 lg:gap-3 ml-auto">
+
+        {/* Right */}
+        <div className="flex items-center gap-2 lg:gap-2.5 ml-auto">
           <button
             onClick={() => setShowModal(true)}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs lg:text-sm px-2 lg:px-4 py-1.5 lg:py-2 rounded-lg font-medium transition-colors whitespace-nowrap"
+            className="btn-primary text-xs lg:text-sm px-3 lg:px-4 py-2"
           >
-            + Add
+            <Plus className="h-4 w-4" />
+            <span className="hidden sm:inline">Add</span>
           </button>
-          <button className="p-1.5 lg:p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors">
-            <Bell className="h-4 w-4 lg:h-5 lg:w-5" />
+
+          <button className="btn-ghost p-2 rounded-xl relative">
+            <Bell className="h-4.5 w-4.5" />
+            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-rose-500 rounded-full" />
           </button>
-          <button
-            onClick={toggleTheme}
-            className="p-1.5 lg:p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors"
-            title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
-          >
-            {theme === "light" ? (
-              <Moon className="h-4 w-4 lg:h-5 lg:w-5" />
-            ) : (
-              <Sun className="h-4 w-4 lg:h-5 lg:w-5" />
-            )}
+
+          <button onClick={toggleTheme} className="btn-ghost p-2 rounded-xl" title="Toggle theme">
+            {theme === "light" ? <Moon className="h-4.5 w-4.5" /> : <Sun className="h-4.5 w-4.5" />}
           </button>
-          <div className="flex items-center gap-1 lg:gap-2 pl-2 lg:pl-3 border-l border-gray-100 dark:border-gray-800">
-            <div className="h-7 w-7 lg:h-8 lg:w-8 rounded-full bg-emerald-100 dark:bg-emerald-900 flex items-center justify-center text-xs font-medium text-emerald-700 dark:text-emerald-300">
+
+          <div className="flex items-center gap-2 pl-3 border-l border-[var(--border-card)]">
+            <div className="h-8 w-8 rounded-xl bg-emerald-500 flex items-center justify-center text-xs font-semibold text-white">
               {initials}
             </div>
             <button
               onClick={() => signOut({ callbackUrl: "/auth/login" })}
-              className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+              className="btn-ghost p-2 rounded-xl text-[var(--text-tertiary)] hover:text-rose-500"
               title="Sign out"
             >
               <LogOut className="h-4 w-4" />
@@ -60,7 +60,7 @@ export function Header({ user }: HeaderProps) {
           </div>
         </div>
       </header>
-      {showModal && <AddTransactionModal onClose={() => setShowModal(false)} onSuccess={() => { setShowModal(false); window.location.reload(); }} />}
+      {showModal && <AddTransactionModal onClose={() => setShowModal(false)} onSuccess={() => setShowModal(false)} />}
     </>
   );
 }

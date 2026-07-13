@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES, PAYMENT_METHODS } from "@/lib/utils";
 
 const schema = z.object({
@@ -39,67 +39,107 @@ export function AddTransactionModal({ onClose, onSuccess }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-md p-6 shadow-xl" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 animate-fade-in" onClick={onClose}>
+      <div
+        className="card w-full max-w-md p-6 animate-scale-in max-h-[90vh] overflow-y-auto"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Header */}
         <div className="flex justify-between items-center mb-5">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Add Transaction</h2>
-          <button onClick={onClose} className="p-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+          <h2 className="text-lg font-display font-semibold text-[var(--text-primary)]">Add Transaction</h2>
+          <button
+            onClick={onClose}
+            className="btn-ghost p-1.5 rounded-xl"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-            {["EXPENSE", "INCOME"].map(t => (
+          {/* Type toggle */}
+          <div className="flex bg-[var(--bg-hover)] rounded-xl p-1">
+            {(["EXPENSE", "INCOME"] as const).map(t => (
               <label key={t} className="flex-1 relative">
                 <input type="radio" value={t} {...register("type")} className="sr-only" />
-                <span className={`block text-center text-sm py-1.5 rounded-md cursor-pointer transition-colors ${type === t ? "bg-white dark:bg-gray-700 font-medium shadow-sm text-gray-900 dark:text-white" : "text-gray-500 dark:text-gray-400"}`}>
+                <span
+                  className={`block text-center text-sm py-2 rounded-lg cursor-pointer transition-all duration-150 font-medium ${
+                    type === t
+                      ? "bg-[var(--bg-card)] text-[var(--text-primary)]"
+                      : "text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]"
+                  }`}
+                >
                   {t === "INCOME" ? "Income" : "Expense"}
                 </span>
               </label>
             ))}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Amount (PKR)</label>
-            <input type="number" {...register("amount", { valueAsNumber: true })} placeholder="0" className="w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-            {errors.amount && <p className="text-xs text-red-500 mt-1">{errors.amount.message}</p>}
+          {/* Amount */}
+          <div className="space-y-1.5">
+            <label className="block text-xs font-medium text-[var(--text-secondary)]">Amount (PKR)</label>
+            <input
+              type="number"
+              {...register("amount", { valueAsNumber: true })}
+              placeholder="0"
+              className="input text-lg font-semibold num"
+            />
+            {errors.amount && <p className="text-xs text-rose-500 mt-1">{errors.amount.message}</p>}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
-            <input {...register("description")} placeholder="e.g. Grocery shopping" className="w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-            {errors.description && <p className="text-xs text-red-500 mt-1">{errors.description.message}</p>}
+          {/* Description */}
+          <div className="space-y-1.5">
+            <label className="block text-xs font-medium text-[var(--text-secondary)]">Description</label>
+            <input
+              {...register("description")}
+              placeholder="e.g. Grocery shopping"
+              className="input"
+            />
+            {errors.description && <p className="text-xs text-rose-500 mt-1">{errors.description.message}</p>}
           </div>
 
+          {/* Category + Date */}
           <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
-              <select {...register("category")} className="w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            <div className="space-y-1.5">
+              <label className="block text-xs font-medium text-[var(--text-secondary)]">Category</label>
+              <select {...register("category")} className="select">
                 <option value="">Select...</option>
                 {categories.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date</label>
-              <input type="date" {...register("date")} className="w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            <div className="space-y-1.5">
+              <label className="block text-xs font-medium text-[var(--text-secondary)]">Date</label>
+              <input type="date" {...register("date")} className="input" />
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Payment Method</label>
-            <select {...register("paymentMethod")} className="w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          {/* Payment Method */}
+          <div className="space-y-1.5">
+            <label className="block text-xs font-medium text-[var(--text-secondary)]">Payment Method</label>
+            <select {...register("paymentMethod")} className="select">
               {PAYMENT_METHODS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes (optional)</label>
-            <textarea {...register("notes")} rows={2} className="w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none" />
+          {/* Notes */}
+          <div className="space-y-1.5">
+            <label className="block text-xs font-medium text-[var(--text-secondary)]">Notes (optional)</label>
+            <textarea
+              {...register("notes")}
+              rows={2}
+              className="input resize-none"
+              placeholder="Any additional notes..."
+            />
           </div>
 
-          <button type="submit" disabled={loading} className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-medium py-2.5 rounded-lg transition-colors">
-            {loading ? "Saving..." : "Add Transaction"}
+          <button type="submit" disabled={loading} className="btn-primary w-full py-2.5">
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Saving...
+              </span>
+            ) : (
+              "Add Transaction"
+            )}
           </button>
         </form>
       </div>

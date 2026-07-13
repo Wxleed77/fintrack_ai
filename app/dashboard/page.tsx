@@ -8,15 +8,12 @@ import { BudgetOverview } from "@/components/dashboard/BudgetOverview";
 import { GoalsWidget } from "@/components/dashboard/GoalsWidget";
 import { AIInsights } from "@/components/dashboard/AIInsights";
 
-// Client-side cache for API responses
 const dashboardCache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const CACHE_DURATION = 5 * 60 * 1000;
 
 async function getCachedData(key: string, fetcher: () => Promise<any>) {
   const cached = dashboardCache.get(key);
-  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-    return cached.data;
-  }
+  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) return cached.data;
   const data = await fetcher();
   dashboardCache.set(key, { data, timestamp: Date.now() });
   return data;
@@ -39,16 +36,16 @@ export default function DashboardPage() {
     const year = now.getFullYear();
 
     Promise.all([
-      getCachedData("analytics", () => 
+      getCachedData("analytics", () =>
         fetch(`/api/analytics?month=${month}&year=${year}`).then(r => r.json())
       ),
-      getCachedData("transactions", () => 
+      getCachedData("transactions", () =>
         fetch(`/api/transactions?month=${month}&year=${year}&limit=5`).then(r => r.json())
       ),
-      getCachedData("budgets", () => 
+      getCachedData("budgets", () =>
         fetch(`/api/budgets?month=${month}&year=${year}`).then(r => r.json())
       ),
-      getCachedData("goals", () => 
+      getCachedData("goals", () =>
         fetch("/api/goals").then(r => r.json())
       ),
     ]).then(([anal, txns, bdgs, gls]) => {
@@ -64,9 +61,7 @@ export default function DashboardPage() {
       if (mountedRef.current) setIsLoading(false);
     });
 
-    return () => {
-      mountedRef.current = false;
-    };
+    return () => { mountedRef.current = false; };
   }, []);
 
   return (

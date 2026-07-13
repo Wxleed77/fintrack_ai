@@ -13,43 +13,58 @@ export function StatsCards({ summary, isLoading }: Props) {
       label: "Monthly Income",
       value: formatCurrency(summary?.income || 0),
       icon: TrendingUp,
-      color: "text-emerald-600",
-      bg: "bg-emerald-50 dark:bg-emerald-950",
+      accent: "text-emerald-500",
+      bar: "bg-emerald-500",
     },
     {
       label: "Monthly Expenses",
       value: formatCurrency(summary?.expenses || 0),
       icon: TrendingDown,
-      color: "text-red-500",
-      bg: "bg-red-50 dark:bg-red-950",
+      accent: "text-rose-500",
+      bar: "bg-rose-500",
     },
     {
       label: "Net Savings",
       value: formatCurrency(summary?.savings || 0),
       icon: DollarSign,
-      color: "text-blue-600",
-      bg: "bg-blue-50 dark:bg-blue-950",
+      accent: "text-blue-500",
+      bar: "bg-blue-500",
     },
     {
       label: "Savings Rate",
       value: `${summary?.savingsRate || 0}%`,
       icon: PiggyBank,
-      color: "text-purple-600",
-      bg: "bg-purple-50 dark:bg-purple-950",
+      accent: "text-violet-500",
+      bar: "bg-violet-500",
     },
   ];
 
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[1, 2, 3, 4].map(i => (
+          <div key={i} className="card p-4 space-y-3">
+            <div className="skeleton h-4 w-20" />
+            <div className="skeleton h-6 w-28" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      {cards.map(({ label, value, icon: Icon, color, bg }) => (
-        <div key={label} className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-4">
+      {cards.map(({ label, value, icon: Icon, accent, bar }) => (
+        <div key={label} className="card p-4 relative overflow-hidden">
+          {/* Top accent bar */}
+          <div className={`absolute top-0 left-0 right-0 h-0.5 ${bar}`} />
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{label}</p>
-            <div className={`p-2 rounded-lg ${bg}`}>
-              <Icon className={`h-4 w-4 ${color}`} />
-            </div>
+            <p className="text-xs font-medium text-[var(--text-secondary)]">{label}</p>
+            <Icon className={`h-4 w-4 ${accent}`} />
           </div>
-          <p className="text-xl font-semibold text-gray-900 dark:text-white">{value}</p>
+          <p className={`text-xl lg:text-2xl font-bold num ${label === "Net Savings" && (summary?.savings || 0) < 0 ? "text-rose-500" : "text-[var(--text-primary)]"}`}>
+            {value}
+          </p>
         </div>
       ))}
     </div>
