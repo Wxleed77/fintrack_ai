@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { StatsCards } from "@/components/dashboard/StatsCards";
 import { SpendingChart } from "@/components/charts/SpendingChart";
 import { TrendChart } from "@/components/charts/TrendChart";
@@ -27,13 +27,15 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const mountedRef = useRef(true);
 
-  useEffect(() => {
-    mountedRef.current = true;
+  const fetchDashboard = useCallback(() => {
+    if (!mountedRef.current) return;
     setIsLoading(true);
 
     const now = new Date();
     const month = now.getMonth() + 1;
     const year = now.getFullYear();
+
+    dashboardCache.clear();
 
     Promise.all([
       getCachedData("analytics", () =>
@@ -60,9 +62,19 @@ export default function DashboardPage() {
       console.error("Dashboard fetch error:", err);
       if (mountedRef.current) setIsLoading(false);
     });
-
-    return () => { mountedRef.current = false; };
   }, []);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    fetchDashboard();
+
+    const handler = () => fetchDashboard();
+    window.addEventListener("fin:data-change", handler);
+    return () => {
+      mountedRef.current = false;
+      window.removeEventListener("fin:data-change", handler);
+    };
+  }, [fetchDashboard]);
 
   return (
     <div className="space-y-6">

@@ -1,7 +1,7 @@
 "use client";
 import { signOut } from "next-auth/react";
 import { Bell, LogOut, Moon, Sun, Plus } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useTheme } from "./ThemeProvider";
 import { AddTransactionModal } from "@/components/forms/AddTransactionModal";
 
@@ -13,6 +13,11 @@ export function Header({ user }: HeaderProps) {
   const [showModal, setShowModal] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const initials = user.name?.split(" ").map(n => n[0]).join("").toUpperCase() || "U";
+
+  const handleSuccess = useCallback(() => {
+    setShowModal(false);
+    window.dispatchEvent(new CustomEvent("fin:data-change"));
+  }, []);
 
   return (
     <>
@@ -60,7 +65,7 @@ export function Header({ user }: HeaderProps) {
           </div>
         </div>
       </header>
-      {showModal && <AddTransactionModal onClose={() => setShowModal(false)} onSuccess={() => setShowModal(false)} />}
+      {showModal && <AddTransactionModal onClose={() => setShowModal(false)} onSuccess={handleSuccess} />}
     </>
   );
 }
