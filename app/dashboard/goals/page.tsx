@@ -31,7 +31,7 @@ export default function GoalsPage() {
                 <h3 className="font-display font-semibold text-[var(--text-primary)]">{goal.goalName}</h3>
                 <div className="flex items-center gap-2">
                   {isComplete && (
-                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500">
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-500">
                       Complete!
                     </span>
                   )}

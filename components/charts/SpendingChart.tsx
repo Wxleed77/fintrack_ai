@@ -1,12 +1,13 @@
 "use client";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { motion } from "framer-motion";
 import { CategoryBreakdown } from "@/types";
 import { formatCurrency } from "@/lib/utils";
 
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload?.length) {
     return (
-      <div className="card px-3 py-2 text-xs" style={{ boxShadow: "0 4px 12px rgba(11, 17, 30, 0.12)" }}>
+      <div className="card px-3 py-2 text-xs" style={{ boxShadow: "0 4px 12px rgba(13, 17, 23, 0.12)" }}>
         <p className="font-medium text-[var(--text-primary)]">{payload[0].name}</p>
         <p className="num text-[var(--text-secondary)]">{formatCurrency(payload[0].value)}</p>
       </div>
@@ -31,7 +32,12 @@ export function SpendingChart({ data, isLoading }: { data: CategoryBreakdown[]; 
   }
 
   return (
-    <div className="card p-5">
+    <motion.div
+      className="card p-5"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
+    >
       <h3 className="font-display font-semibold text-[var(--text-primary)] mb-4">Spending Breakdown</h3>
       {data.length === 0 ? (
         <p className="text-sm text-[var(--text-tertiary)] text-center py-8">No expense data</p>
@@ -57,9 +63,23 @@ export function SpendingChart({ data, isLoading }: { data: CategoryBreakdown[]; 
               <Tooltip content={<CustomTooltip />} />
             </PieChart>
           </ResponsiveContainer>
-          <div className="space-y-2 mt-3">
+          <motion.div
+            className="space-y-2 mt-3"
+            initial="initial"
+            animate="animate"
+            variants={{
+              animate: { transition: { staggerChildren: 0.04, delayChildren: 0.15 } },
+            }}
+          >
             {data.slice(0, 5).map((item) => (
-              <div key={item.category} className="flex items-center justify-between text-xs">
+              <motion.div
+                key={item.category}
+                variants={{
+                  initial: { opacity: 0, x: -6 },
+                  animate: { opacity: 1, x: 0, transition: { duration: 0.2 } },
+                }}
+                className="flex items-center justify-between text-xs"
+              >
                 <div className="flex items-center gap-2">
                   <div
                     className="w-2.5 h-2.5 rounded-sm"
@@ -70,11 +90,11 @@ export function SpendingChart({ data, isLoading }: { data: CategoryBreakdown[]; 
                 <span className="text-[var(--text-tertiary)] num font-medium">
                   {item.percentage}%
                 </span>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </>
       )}
-    </div>
+    </motion.div>
   );
 }

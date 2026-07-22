@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { formatCurrency, EXPENSE_CATEGORIES } from "@/lib/utils";
 import { Budget } from "@/types";
+import { motion } from "framer-motion";
 import { Wallet, Plus } from "lucide-react";
 
 export default function BudgetsPage() {
@@ -43,10 +44,10 @@ export default function BudgetsPage() {
             placeholder="Limit (PKR)"
             className="input flex-1 num"
           />
-          <button type="submit" className="btn-primary whitespace-nowrap">
+          <motion.button whileTap={{ scale: 0.98 }} type="submit" className="btn-primary whitespace-nowrap">
             <Plus className="h-4 w-4" />
             Save
-          </button>
+          </motion.button>
         </form>
       </div>
 
@@ -54,7 +55,7 @@ export default function BudgetsPage() {
         {budgets.map(budget => (
           <div key={budget.id} className="card-hover p-5">
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-500">
+              <div className="p-2.5 rounded-md bg-indigo-500/10 text-indigo-500">
                 <Wallet className="h-5 w-5" />
               </div>
               <div>

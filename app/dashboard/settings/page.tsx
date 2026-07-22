@@ -109,11 +109,11 @@ export default function SettingsPage() {
         <div
           className={`flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium animate-slide-down ${
             message.type === "success"
-              ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-500"
-              : "bg-rose-500/10 border border-rose-500/20 text-rose-500"
+              ? "bg-teal-500/10 border border-teal-500/20 text-teal-500"
+              : "bg-coral-500/10 border border-coral-500/20 text-coral-500"
           }`}
         >
-          <span className={`w-1.5 h-1.5 rounded-full ${message.type === "success" ? "bg-emerald-500" : "bg-rose-500"}`} />
+          <span className={`w-1.5 h-1.5 rounded-full ${message.type === "success" ? "bg-teal-500" : "bg-coral-500"}`} />
           {message.text}
         </div>
       )}
@@ -227,7 +227,7 @@ export default function SettingsPage() {
               <button
                 onClick={() => setPreferences({ ...preferences, emailNotifications: !preferences.emailNotifications })}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-150 ${
-                  preferences.emailNotifications ? "bg-emerald-500" : "bg-[var(--bg-hover)]"
+                  preferences.emailNotifications ? "bg-indigo-500" : "bg-[var(--bg-hover)]"
                 }`}
               >
                 <span

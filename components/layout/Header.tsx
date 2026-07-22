@@ -2,6 +2,7 @@
 import { signOut } from "next-auth/react";
 import { Bell, LogOut, Moon, Sun, Plus } from "lucide-react";
 import { useCallback, useState } from "react";
+import { motion } from "framer-motion";
 import { useTheme } from "./ThemeProvider";
 import { AddTransactionModal } from "@/components/forms/AddTransactionModal";
 
@@ -25,7 +26,7 @@ export function Header({ user }: HeaderProps) {
         {/* Left */}
         <div className="hidden lg:block">
           <h2 className="text-sm font-medium text-[var(--text-primary)]">
-            Good morning, {user.name?.split(" ")[0]} 👋
+            Good morning, {user.name?.split(" ")[0]}
           </h2>
           <p className="text-xs text-[var(--text-tertiary)]">
             {new Date().toLocaleDateString("en-PK", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
@@ -34,34 +35,44 @@ export function Header({ user }: HeaderProps) {
 
         {/* Right */}
         <div className="flex items-center gap-2 lg:gap-2.5 ml-auto">
-          <button
+          <motion.button
+            whileTap={{ scale: 0.95 }}
             onClick={() => setShowModal(true)}
             className="btn-primary text-xs lg:text-sm px-3 lg:px-4 py-2"
           >
             <Plus className="h-4 w-4" />
             <span className="hidden sm:inline">Add</span>
-          </button>
+          </motion.button>
 
-          <button className="btn-ghost p-2 rounded-xl relative">
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            className="btn-ghost p-2 rounded-md relative"
+          >
             <Bell className="h-4.5 w-4.5" />
-            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-rose-500 rounded-full" />
-          </button>
+            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-coral-500 rounded-full" />
+          </motion.button>
 
-          <button onClick={toggleTheme} className="btn-ghost p-2 rounded-xl" title="Toggle theme">
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={toggleTheme}
+            className="btn-ghost p-2 rounded-md"
+            title="Toggle theme"
+          >
             {theme === "light" ? <Moon className="h-4.5 w-4.5" /> : <Sun className="h-4.5 w-4.5" />}
-          </button>
+          </motion.button>
 
           <div className="flex items-center gap-2 pl-3 border-l border-[var(--border-card)]">
-            <div className="h-8 w-8 rounded-xl bg-emerald-500 flex items-center justify-center text-xs font-semibold text-white">
+            <div className="h-8 w-8 rounded-md bg-indigo-500 flex items-center justify-center text-xs font-semibold text-white">
               {initials}
             </div>
-            <button
+            <motion.button
+              whileTap={{ scale: 0.95 }}
               onClick={() => signOut({ callbackUrl: "/auth/login" })}
-              className="btn-ghost p-2 rounded-xl text-[var(--text-tertiary)] hover:text-rose-500"
+              className="btn-ghost p-2 rounded-md text-[var(--text-tertiary)] hover:text-coral-500"
               title="Sign out"
             >
               <LogOut className="h-4 w-4" />
-            </button>
+            </motion.button>
           </div>
         </div>
       </header>

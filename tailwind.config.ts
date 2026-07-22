@@ -10,30 +10,40 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ledger: {
-          50: "#f4f6f9",
-          100: "#e8ecf2",
-          200: "#d0d7e3",
-          400: "#7c8ca6",
-          600: "#2a384b",
-          900: "#0b111e",
+        slate: {
+          50: "#f7f8fa",
+          100: "#eef0f4",
+          200: "#dce0e8",
+          400: "#8b95a8",
+          600: "#4b5563",
+          800: "#1e2533",
+          900: "#0d1117",
         },
-        emerald: {
-          500: "#10b981",
-          600: "#059669",
-          700: "#047857",
+        indigo: {
+          400: "#6b8aff",
+          500: "#4f6ef7",
+          600: "#3d5bd9",
+          700: "#2f4bbf",
         },
-        rose: {
-          500: "#f43f5e",
+        teal: {
+          400: "#2dd4bf",
+          500: "#14b8a6",
+          600: "#0d9488",
+        },
+        coral: {
+          400: "#fb8a9c",
+          500: "#fb7185",
+          600: "#e05a6e",
         },
         amber: {
-          500: "#f59e0b",
-        },
-        blue: {
-          500: "#3b82f6",
+          400: "#fcd34d",
+          500: "#fbbf24",
+          600: "#f59e0b",
         },
         violet: {
+          400: "#a78bfa",
           500: "#8b5cf6",
+          600: "#7c3aed",
         },
       },
       fontFamily: {
@@ -45,17 +55,19 @@ const config: Config = {
         "2xs": ["0.625rem", { lineHeight: "0.875rem" }],
       },
       borderRadius: {
-        xl: "12px",
-        "2xl": "16px",
-        "3xl": "20px",
+        sm: "6px",
+        md: "10px",
+        lg: "14px",
+        xl: "20px",
       },
       boxShadow: {
-        card: "0 1px 3px rgba(11, 17, 30, 0.06), 0 1px 2px rgba(11, 17, 30, 0.04)",
-        "card-hover": "0 4px 12px rgba(11, 17, 30, 0.08), 0 2px 4px rgba(11, 17, 30, 0.04)",
-        "card-dark": "0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2)",
+        card: "0 1px 2px rgba(13, 17, 23, 0.06), 0 1px 3px rgba(13, 17, 23, 0.04)",
+        "card-hover": "0 4px 12px rgba(13, 17, 23, 0.08), 0 2px 4px rgba(13, 17, 23, 0.04)",
+        "card-dark": "0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2)",
         "card-dark-hover": "0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3)",
-        glass: "0 4px 24px rgba(11, 17, 30, 0.08)",
-        "glass-lg": "0 8px 40px rgba(11, 17, 30, 0.12)",
+        glass: "0 4px 24px rgba(13, 17, 23, 0.08)",
+        "glass-lg": "0 8px 40px rgba(13, 17, 23, 0.12)",
+        indigo: "0 2px 8px rgba(79, 110, 247, 0.25)",
       },
       animation: {
         "fade-in": "fadeIn 0.3s ease-out forwards",

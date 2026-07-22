@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { motion } from "framer-motion";
 import { X, Loader2 } from "lucide-react";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES, PAYMENT_METHODS } from "@/lib/utils";
 
@@ -40,16 +41,20 @@ export function AddTransactionModal({ onClose, onSuccess }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 animate-fade-in" onClick={onClose}>
-      <div
-        className="card w-full max-w-md p-6 animate-scale-in max-h-[90vh] overflow-y-auto"
-        onClick={e => e.stopPropagation()}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.96 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.96 }}
+        transition={{ duration: 0.15, ease: "easeOut" }}
+        className="card w-full max-w-md p-6 max-h-[90vh] overflow-y-auto"
+        onClick={(e: React.MouseEvent) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex justify-between items-center mb-5">
           <h2 className="text-lg font-display font-semibold text-[var(--text-primary)]">Add Transaction</h2>
           <button
             onClick={onClose}
-            className="btn-ghost p-1.5 rounded-xl"
+            className="btn-ghost p-1.5 rounded-md"
           >
             <X className="h-5 w-5" />
           </button>
@@ -57,12 +62,12 @@ export function AddTransactionModal({ onClose, onSuccess }: Props) {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Type toggle */}
-          <div className="flex bg-[var(--bg-hover)] rounded-xl p-1">
+          <div className="flex bg-[var(--bg-hover)] rounded-md p-1">
             {(["EXPENSE", "INCOME"] as const).map(t => (
               <label key={t} className="flex-1 relative">
                 <input type="radio" value={t} {...register("type")} className="sr-only" />
                 <span
-                  className={`block text-center text-sm py-2 rounded-lg cursor-pointer transition-all duration-150 font-medium ${
+                  className={`block text-center text-sm py-2 rounded-md cursor-pointer transition-all duration-150 font-medium ${
                     type === t
                       ? "bg-[var(--bg-card)] text-[var(--text-primary)]"
                       : "text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]"
@@ -83,7 +88,7 @@ export function AddTransactionModal({ onClose, onSuccess }: Props) {
               placeholder="0"
               className="input text-lg font-semibold num"
             />
-            {errors.amount && <p className="text-xs text-rose-500 mt-1">{errors.amount.message}</p>}
+            {errors.amount && <p className="text-xs text-coral-500 mt-1">{errors.amount.message}</p>}
           </div>
 
           {/* Description */}
@@ -94,7 +99,7 @@ export function AddTransactionModal({ onClose, onSuccess }: Props) {
               placeholder="e.g. Grocery shopping"
               className="input"
             />
-            {errors.description && <p className="text-xs text-rose-500 mt-1">{errors.description.message}</p>}
+            {errors.description && <p className="text-xs text-coral-500 mt-1">{errors.description.message}</p>}
           </div>
 
           {/* Category + Date */}
@@ -131,7 +136,12 @@ export function AddTransactionModal({ onClose, onSuccess }: Props) {
             />
           </div>
 
-          <button type="submit" disabled={loading} className="btn-primary w-full py-2.5">
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            type="submit"
+            disabled={loading}
+            className="btn-primary w-full py-2.5"
+          >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -140,9 +150,9 @@ export function AddTransactionModal({ onClose, onSuccess }: Props) {
             ) : (
               "Add Transaction"
             )}
-          </button>
+          </motion.button>
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 }

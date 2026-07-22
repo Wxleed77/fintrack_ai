@@ -1,8 +1,21 @@
 "use client";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { SavingsGoal } from "@/types";
 import { formatCurrency } from "@/lib/utils";
 import { Target, ExternalLink } from "lucide-react";
+
+function AnimatedBar({ pct, color }: { pct: number; color: string }) {
+  return (
+    <motion.div
+      className="h-full rounded-full"
+      initial={{ width: 0 }}
+      animate={{ width: `${pct}%` }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      style={{ backgroundColor: color }}
+    />
+  );
+}
 
 export function GoalsWidget({ goals, isLoading }: { goals: SavingsGoal[]; isLoading?: boolean }) {
   if (isLoading) {
@@ -25,17 +38,30 @@ export function GoalsWidget({ goals, isLoading }: { goals: SavingsGoal[]; isLoad
         <h3 className="font-display font-semibold text-[var(--text-primary)]">Savings Goals</h3>
         <Link
           href="/dashboard/goals"
-          className="text-xs font-medium text-emerald-500 hover:text-emerald-600 transition-colors inline-flex items-center gap-1"
+          className="text-xs font-medium text-indigo-500 hover:text-indigo-600 transition-colors inline-flex items-center gap-1"
         >
           View all
           <ExternalLink className="h-3 w-3" />
         </Link>
       </div>
-      <div className="space-y-4">
+      <motion.div
+        className="space-y-4"
+        initial="initial"
+        animate="animate"
+        variants={{
+          animate: { transition: { staggerChildren: 0.06, delayChildren: 0.1 } },
+        }}
+      >
         {goals.slice(0, 3).map((goal) => {
           const pct = Math.min(Math.round((goal.currentAmount / goal.targetAmount) * 100), 100);
           return (
-            <div key={goal.id}>
+            <motion.div
+              key={goal.id}
+              variants={{
+                initial: { opacity: 0, y: 8 },
+                animate: { opacity: 1, y: 0, transition: { duration: 0.25, ease: "easeOut" } },
+              }}
+            >
               <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full" style={{ backgroundColor: goal.color }} />
@@ -44,15 +70,12 @@ export function GoalsWidget({ goals, isLoading }: { goals: SavingsGoal[]; isLoad
                 <span className="text-xs font-semibold text-[var(--text-secondary)] num">{pct}%</span>
               </div>
               <div className="progress-bar">
-                <div
-                  className="progress-bar-fill"
-                  style={{ width: `${pct}%`, backgroundColor: goal.color }}
-                />
+                <AnimatedBar pct={pct} color={goal.color} />
               </div>
               <p className="text-xs text-[var(--text-tertiary)] mt-1.5 num">
                 {formatCurrency(goal.currentAmount)} of {formatCurrency(goal.targetAmount)}
               </p>
-            </div>
+            </motion.div>
           );
         })}
         {goals.length === 0 && (
@@ -61,7 +84,7 @@ export function GoalsWidget({ goals, isLoading }: { goals: SavingsGoal[]; isLoad
             <p className="text-sm text-[var(--text-tertiary)]">No goals set</p>
           </div>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }

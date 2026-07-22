@@ -1,8 +1,20 @@
 "use client";
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { formatCurrency, formatDate, EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/lib/utils";
 import { Transaction } from "@/types";
 import { ArrowUpRight, ArrowDownRight, Trash2, Filter, Search } from "lucide-react";
+
+const stagger = {
+  animate: {
+    transition: { staggerChildren: 0.03, delayChildren: 0.08 },
+  },
+};
+
+const fadeSlide = {
+  initial: { opacity: 0, y: 8 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.2, ease: "easeOut" } },
+};
 
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -31,7 +43,12 @@ export default function TransactionsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      className="space-y-6"
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+    >
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -46,7 +63,7 @@ export default function TransactionsPage() {
           <Filter className="h-4 w-4 text-[var(--text-tertiary)]" />
           <select
             value={filter.type}
-            onChange={e => setFilter(f => ({ ...f, type: e.target.value }))}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFilter(f => ({ ...f, type: e.target.value }))}
             className="select text-xs py-1.5 w-auto"
           >
             <option value="">All Types</option>
@@ -55,7 +72,7 @@ export default function TransactionsPage() {
           </select>
           <select
             value={filter.category}
-            onChange={e => setFilter(f => ({ ...f, category: e.target.value }))}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFilter(f => ({ ...f, category: e.target.value }))}
             className="select text-xs py-1.5 w-auto"
           >
             <option value="">All Categories</option>
@@ -66,7 +83,7 @@ export default function TransactionsPage() {
           {(filter.type || filter.category) && (
             <button
               onClick={() => setFilter({ type: "", category: "" })}
-              className="text-xs text-[var(--text-tertiary)] hover:text-rose-500 transition-colors"
+              className="text-xs text-[var(--text-tertiary)] hover:text-coral-500 transition-colors"
             >
               Clear filters
             </button>
@@ -80,7 +97,7 @@ export default function TransactionsPage() {
           <div className="p-8 space-y-4">
             {[1, 2, 3, 4].map(i => (
               <div key={i} className="flex items-center gap-4">
-                <div className="skeleton h-9 w-9 rounded-xl" />
+                <div className="skeleton h-9 w-9 rounded-md" />
                 <div className="flex-1 space-y-1.5">
                   <div className="skeleton h-4 w-40" />
                   <div className="skeleton h-3 w-28" />
@@ -96,41 +113,45 @@ export default function TransactionsPage() {
             <p className="text-sm text-[var(--text-tertiary)] mt-1">Try adjusting your filters</p>
           </div>
         ) : (
-          transactions.map(txn => (
-            <div
-              key={txn.id}
-              className="flex items-center gap-4 p-4 hover:bg-[var(--bg-hover)] transition-colors duration-150 group"
-            >
-              <div className={`p-2.5 rounded-xl ${
-                txn.type === "INCOME"
-                  ? "bg-emerald-500/10 text-emerald-500"
-                  : "bg-rose-500/10 text-rose-500"
-              }`}>
-                {txn.type === "INCOME"
-                  ? <ArrowUpRight className="h-4.5 w-4.5" />
-                  : <ArrowDownRight className="h-4.5 w-4.5" />}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-[var(--text-primary)] truncate">{txn.description}</p>
-                <p className="text-xs text-[var(--text-tertiary)]">
-                  {txn.category} · {txn.paymentMethod} · {formatDate(txn.date)}
-                </p>
-              </div>
-              <span className={`text-sm font-semibold num ${
-                txn.type === "INCOME" ? "text-emerald-500" : "text-rose-500"
-              }`}>
-                {txn.type === "INCOME" ? "+" : "-"}{formatCurrency(txn.amount)}
-              </span>
-              <button
-                onClick={() => del(txn.id)}
-                className="p-2 rounded-xl text-[var(--text-tertiary)] opacity-0 group-hover:opacity-100 hover:text-rose-500 hover:bg-rose-500/10 transition-all duration-150"
+          <motion.div variants={stagger} initial="initial" animate="animate">
+            {transactions.map(txn => (
+              <motion.div
+                key={txn.id}
+                variants={fadeSlide}
+                className="flex items-center gap-4 p-4 hover:bg-[var(--bg-hover)] transition-colors duration-150 group"
               >
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </div>
-          ))
+                <div className={`p-2.5 rounded-md ${
+                  txn.type === "INCOME"
+                    ? "bg-teal-500/10 text-teal-500"
+                    : "bg-coral-500/10 text-coral-500"
+                }`}>
+                  {txn.type === "INCOME"
+                    ? <ArrowUpRight className="h-4.5 w-4.5" />
+                    : <ArrowDownRight className="h-4.5 w-4.5" />}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-[var(--text-primary)] truncate">{txn.description}</p>
+                  <p className="text-xs text-[var(--text-tertiary)]">
+                    {txn.category} · {txn.paymentMethod} · {formatDate(txn.date)}
+                  </p>
+                </div>
+                <span className={`text-sm font-semibold num ${
+                  txn.type === "INCOME" ? "text-teal-500" : "text-coral-500"
+                }`}>
+                  {txn.type === "INCOME" ? "+" : "-"}{formatCurrency(txn.amount)}
+                </span>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => del(txn.id)}
+                  className="p-2 rounded-md text-[var(--text-tertiary)] opacity-0 group-hover:opacity-100 hover:text-coral-500 hover:bg-coral-500/10 transition-all duration-150"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </motion.button>
+              </motion.div>
+            ))}
+          </motion.div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

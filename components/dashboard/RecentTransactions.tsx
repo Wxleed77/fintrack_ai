@@ -1,8 +1,20 @@
 "use client";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { Transaction } from "@/types";
 import { ArrowUpRight, ArrowDownRight, ExternalLink } from "lucide-react";
+
+const stagger = {
+  animate: {
+    transition: { staggerChildren: 0.04, delayChildren: 0.1 },
+  },
+};
+
+const fadeSlide = {
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.25, ease: "easeOut" } },
+};
 
 export function RecentTransactions({ transactions, isLoading }: { transactions: Transaction[]; isLoading?: boolean }) {
   if (isLoading) {
@@ -11,7 +23,7 @@ export function RecentTransactions({ transactions, isLoading }: { transactions: 
         <div className="skeleton h-5 w-40 mb-4" />
         {[1, 2, 3].map(i => (
           <div key={i} className="flex items-center gap-3">
-            <div className="skeleton h-8 w-8 rounded-lg" />
+            <div className="skeleton h-8 w-8 rounded-md" />
             <div className="flex-1 space-y-1.5">
               <div className="skeleton h-3.5 w-32" />
               <div className="skeleton h-3 w-24" />
@@ -29,25 +41,26 @@ export function RecentTransactions({ transactions, isLoading }: { transactions: 
         <h3 className="font-display font-semibold text-[var(--text-primary)]">Recent Transactions</h3>
         <Link
           href="/dashboard/transactions"
-          className="text-xs font-medium text-emerald-500 hover:text-emerald-600 transition-colors inline-flex items-center gap-1"
+          className="text-xs font-medium text-indigo-500 hover:text-indigo-600 transition-colors inline-flex items-center gap-1"
         >
           View all
           <ExternalLink className="h-3 w-3" />
         </Link>
       </div>
-      <div className="space-y-1">
+      <motion.div className="space-y-1" variants={stagger} initial="initial" animate="animate">
         {transactions.length === 0 ? (
           <p className="text-sm text-[var(--text-tertiary)] text-center py-6">No transactions yet</p>
         ) : (
           transactions.map((txn) => (
-            <div
+            <motion.div
               key={txn.id}
-              className="flex items-center gap-3 p-2.5 -mx-2.5 rounded-xl hover:bg-[var(--bg-hover)] transition-colors duration-150"
+              variants={fadeSlide}
+              className="flex items-center gap-3 p-2.5 -mx-2.5 rounded-md hover:bg-[var(--bg-hover)] transition-colors duration-150"
             >
-              <div className={`p-2 rounded-xl ${
+              <div className={`p-2 rounded-md ${
                 txn.type === "INCOME"
-                  ? "bg-emerald-500/10 text-emerald-500"
-                  : "bg-rose-500/10 text-rose-500"
+                  ? "bg-teal-500/10 text-teal-500"
+                  : "bg-coral-500/10 text-coral-500"
               }`}>
                 {txn.type === "INCOME"
                   ? <ArrowUpRight className="h-4 w-4" />
@@ -60,14 +73,14 @@ export function RecentTransactions({ transactions, isLoading }: { transactions: 
                 </p>
               </div>
               <span className={`text-sm font-semibold num ${
-                txn.type === "INCOME" ? "text-emerald-500" : "text-rose-500"
+                txn.type === "INCOME" ? "text-teal-500" : "text-coral-500"
               }`}>
                 {txn.type === "INCOME" ? "+" : "-"}{formatCurrency(txn.amount)}
               </span>
-            </div>
+            </motion.div>
           ))
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }

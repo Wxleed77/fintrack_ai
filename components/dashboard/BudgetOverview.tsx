@@ -1,6 +1,19 @@
 "use client";
+import { motion } from "framer-motion";
 import { formatCurrency } from "@/lib/utils";
 import { Budget, CategoryBreakdown } from "@/types";
+
+function AnimatedBar({ pct, color }: { pct: number; color: string }) {
+  return (
+    <motion.div
+      className="h-full rounded-full"
+      initial={{ width: 0 }}
+      animate={{ width: `${pct}%` }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      style={{ backgroundColor: color }}
+    />
+  );
+}
 
 export function BudgetOverview({ budgets, spending, isLoading }: { budgets: Budget[]; spending: CategoryBreakdown[]; isLoading?: boolean }) {
   const spendMap = Object.fromEntries(spending.map(s => [s.category, s.amount]));
@@ -28,29 +41,28 @@ export function BudgetOverview({ budgets, spending, isLoading }: { budgets: Budg
           const pct = Math.min(Math.round((spent / budget.limitAmount) * 100), 100);
           const isWarning = pct >= 90;
           const isCaution = pct >= 70 && pct < 90;
+          const barColor = isWarning ? "#fb7185" : isCaution ? "#fbbf24" : "#14b8a6";
 
           return (
-            <div key={budget.id}>
+            <motion.div
+              key={budget.id}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+            >
               <div className="flex justify-between text-xs mb-1.5">
                 <span className="font-medium text-[var(--text-primary)]">{budget.category}</span>
                 <span className="text-[var(--text-tertiary)] num">
-                  <span className={isWarning ? "text-rose-500" : isCaution ? "text-amber-500" : "text-emerald-500"}>
+                  <span style={{ color: barColor }}>
                     {formatCurrency(spent)}
                   </span>
                   {" / "}{formatCurrency(budget.limitAmount)}
                 </span>
               </div>
               <div className="progress-bar">
-                <div
-                  className={`progress-bar-fill ${
-                    isWarning ? "bg-rose-500" :
-                    isCaution ? "bg-amber-500" :
-                    "bg-emerald-500"
-                  }`}
-                  style={{ width: `${pct}%` }}
-                />
+                <AnimatedBar pct={pct} color={barColor} />
               </div>
-            </div>
+            </motion.div>
           );
         })}
         {budgets.length === 0 && (

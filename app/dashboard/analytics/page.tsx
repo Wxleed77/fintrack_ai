@@ -26,12 +26,12 @@ export default function AnalyticsPage() {
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 p-1.5 bg-[var(--bg-hover)] rounded-xl">
             <Calendar className="h-4 w-4 text-[var(--text-tertiary)] ml-1" />
-            <select value={month} onChange={e => setMonth(+e.target.value)} className="select border-0 bg-transparent py-1 text-xs">
+            <select value={month} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setMonth(+e.target.value)} className="select border-0 bg-transparent py-1 text-xs">
               {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
                 <option key={m} value={m}>{getMonthName(m)}</option>
               ))}
             </select>
-            <select value={year} onChange={e => setYear(+e.target.value)} className="select border-0 bg-transparent py-1 text-xs">
+            <select value={year} onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setYear(+e.target.value)} className="select border-0 bg-transparent py-1 text-xs">
               {[2024, 2025, 2026].map(y => <option key={y} value={y}>{y}</option>)}
             </select>
           </div>

@@ -1,5 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState, useRef } from "react";
+import { motion } from "framer-motion";
 import { StatsCards } from "@/components/dashboard/StatsCards";
 import { SpendingChart } from "@/components/charts/SpendingChart";
 import { TrendChart } from "@/components/charts/TrendChart";
@@ -77,7 +78,12 @@ export default function DashboardPage() {
   }, [fetchDashboard]);
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      className="space-y-6"
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+    >
       <StatsCards summary={analytics?.summary} isLoading={isLoading} />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
@@ -91,6 +97,6 @@ export default function DashboardPage() {
           <BudgetOverview budgets={budgets} spending={analytics?.categoryBreakdown || []} isLoading={isLoading} />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
