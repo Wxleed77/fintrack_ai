@@ -9,11 +9,11 @@ const stagger = {
   animate: {
     transition: { staggerChildren: 0.03, delayChildren: 0.08 },
   },
-};
+} as const;
 
 const fadeSlide = {
   initial: { opacity: 0, y: 8 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.2, ease: "easeOut" } },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.2, ease: "easeOut" as const } },
 };
 
 export default function TransactionsPage() {
