@@ -117,11 +117,13 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <div className="pt-3 border-t border-[var(--border-card)]">
-            <p className="text-xs text-center text-[var(--text-tertiary)]">
-              Demo: demo@fintrack.ai / password123
-            </p>
-          </div>
+          {process.env.NEXT_PUBLIC_DEMO_MODE === "true" && (
+            <div className="pt-3 border-t border-[var(--border-card)]">
+              <p className="text-xs text-center text-[var(--text-tertiary)]">
+                Demo: demo@fintrack.ai / password123
+              </p>
+            </div>
+          )}
         </div>
       </motion.div>
     </div>

@@ -25,8 +25,13 @@ export async function GET(req: NextRequest) {
   const year = searchParams.get("year");
   const type = searchParams.get("type");
   const category = searchParams.get("category");
-  const page = parseInt(searchParams.get("page") || "1");
-  const limit = parseInt(searchParams.get("limit") || "20");
+  // Clamp pagination to prevent DoS via excessive limits or deep offsets
+  const requestedPage = parseInt(searchParams.get("page") || "1");
+  const requestedLimit = parseInt(searchParams.get("limit") || "20");
+  const page = Number.isFinite(requestedPage) && requestedPage >= 1 ? requestedPage : 1;
+  const limit = Number.isFinite(requestedLimit) && requestedLimit >= 1
+    ? Math.min(requestedLimit, 100)
+    : 20;
 
   const where: any = { userId: session.user.id };
   if (type) where.type = type;

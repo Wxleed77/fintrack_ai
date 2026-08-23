@@ -23,12 +23,17 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const body = await req.json();
-  const data = schema.parse(body);
-  const goal = await prisma.savingsGoal.create({
-    data: { ...data, deadline: data.deadline ? new Date(data.deadline) : null, userId: session.user.id },
-  });
-  return NextResponse.json(goal, { status: 201 });
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const body = await req.json();
+    const data = schema.parse(body);
+    const goal = await prisma.savingsGoal.create({
+      data: { ...data, deadline: data.deadline ? new Date(data.deadline) : null, userId: session.user.id },
+    });
+    return NextResponse.json(goal, { status: 201 });
+  } catch (err) {
+    if (err instanceof z.ZodError) return NextResponse.json({ error: err.errors }, { status: 422 });
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 }
