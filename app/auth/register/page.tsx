@@ -23,7 +23,15 @@ export default function RegisterPage() {
     });
     if (!res.ok) {
       const d = await res.json();
-      setError(d.error || "Registration failed");
+      // Normalize the error to a readable string (the API may return Zod issue objects,
+      // e.g. an array — definitely don't render raw objects/arrays into JSX).
+      const raw = d.error;
+      const message = typeof raw === "string"
+        ? raw
+        : Array.isArray(raw)
+          ? raw.map((e: any) => e?.message || "Invalid input").join("; ")
+          : "Registration failed";
+      setError(message);
       setLoading(false);
     } else {
       router.push("/auth/login?registered=1");
@@ -72,6 +80,7 @@ export default function RegisterPage() {
                     value={(form as any)[field]}
                     onChange={e => setForm(f => ({ ...f, [field]: e.target.value }))}
                     required
+                    minLength={field === "name" ? 2 : field === "password" ? 8 : undefined}
                     placeholder={
                       field === "name" ? "Ali Khan" :
                       field === "email" ? "you@example.com" :

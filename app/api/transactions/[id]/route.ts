@@ -31,7 +31,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     });
     return NextResponse.json(transaction);
   } catch (err) {
-    if (err instanceof z.ZodError) return NextResponse.json({ error: err.errors }, { status: 422 });
+    if (err instanceof z.ZodError) {
+      const message = err.issues.map(i => `${i.path.join(".") || "field"}: ${i.message}`).join("; ");
+      return NextResponse.json({ error: message }, { status: 422 });
+    }
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

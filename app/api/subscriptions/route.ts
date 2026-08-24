@@ -31,7 +31,10 @@ export async function POST(req: NextRequest) {
     const sub = await prisma.subscription.create({ data: { ...data, userId: session.user.id } });
     return NextResponse.json(sub, { status: 201 });
   } catch (err) {
-    if (err instanceof z.ZodError) return NextResponse.json({ error: err.errors }, { status: 422 });
+    if (err instanceof z.ZodError) {
+      const message = err.issues.map(i => `${i.path.join(".") || "field"}: ${i.message}`).join("; ");
+      return NextResponse.json({ error: message }, { status: 422 });
+    }
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
