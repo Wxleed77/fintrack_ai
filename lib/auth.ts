@@ -36,12 +36,29 @@ export const authOptions: NextAuthOptions = {
     })] : []),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, updates }: { token: any; user: any; updates?: any }) {
       if (user) token.id = user.id;
+      if (updates?.currency) token.currency = updates.currency;
+      if (updates?.name) token.name = updates.name;
+      // Lazily backfill for sessions issued before currency was stored in the token
+      if (token.id && token.currency === undefined) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: token.id as string },
+            select: { currency: true },
+          });
+          if (dbUser?.currency) token.currency = dbUser.currency;
+        } catch {
+          // keep undefined — session callback falls back to PKR
+        }
+      }
       return token;
     },
     async session({ session, token }) {
-      if (token) session.user.id = token.id as string;
+      if (token) {
+        session.user.id = token.id as string;
+        session.user.currency = (token.currency as string) || "PKR";
+      }
       return session;
     },
   },

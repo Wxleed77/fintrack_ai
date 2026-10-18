@@ -2,21 +2,23 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { motion } from "framer-motion";
 import { CategoryBreakdown } from "@/types";
-import { formatCurrency } from "@/lib/utils";
-
-const CustomTooltip = ({ active, payload }: any) => {
-  if (active && payload?.length) {
-    return (
-      <div className="card px-3 py-2 text-xs" style={{ boxShadow: "0 4px 12px rgba(13, 17, 23, 0.12)" }}>
-        <p className="font-medium text-[var(--text-primary)]">{payload[0].name}</p>
-        <p className="num text-[var(--text-secondary)]">{formatCurrency(payload[0].value)}</p>
-      </div>
-    );
-  }
-  return null;
-};
+import { useCurrency } from "@/components/layout/CurrencyProvider";
 
 export function SpendingChart({ data, isLoading }: { data: CategoryBreakdown[]; isLoading?: boolean }) {
+  const { fmt } = useCurrency();
+
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload?.length) {
+      return (
+        <div className="card px-3 py-2 text-xs" style={{ boxShadow: "0 4px 12px rgba(13, 17, 23, 0.12)" }}>
+          <p className="font-medium text-[var(--text-primary)]">{payload[0].name}</p>
+          <p className="num text-[var(--text-secondary)]">{fmt(payload[0].value)}</p>
+        </div>
+      );
+    }
+    return null;
+  };
+
   if (isLoading) {
     return (
       <div className="card p-5">

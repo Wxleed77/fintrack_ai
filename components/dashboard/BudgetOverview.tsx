@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
-import { formatCurrency } from "@/lib/utils";
+import { useCurrency } from "@/components/layout/CurrencyProvider";
 import { Budget, CategoryBreakdown } from "@/types";
 
 function AnimatedBar({ pct, color }: { pct: number; color: string }) {
@@ -16,6 +16,7 @@ function AnimatedBar({ pct, color }: { pct: number; color: string }) {
 }
 
 export function BudgetOverview({ budgets, spending, isLoading }: { budgets: Budget[]; spending: CategoryBreakdown[]; isLoading?: boolean }) {
+  const { fmt } = useCurrency();
   const spendMap = Object.fromEntries(spending.map(s => [s.category, s.amount]));
 
   if (isLoading) {
@@ -54,9 +55,9 @@ export function BudgetOverview({ budgets, spending, isLoading }: { budgets: Budg
                 <span className="font-medium text-[var(--text-primary)]">{budget.category}</span>
                 <span className="text-[var(--text-tertiary)] num">
                   <span style={{ color: barColor }}>
-                    {formatCurrency(spent)}
+                    {fmt(spent)}
                   </span>
-                  {" / "}{formatCurrency(budget.limitAmount)}
+                  {" / "}{fmt(budget.limitAmount)}
                 </span>
               </div>
               <div className="progress-bar">

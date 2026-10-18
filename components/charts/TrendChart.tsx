@@ -2,25 +2,27 @@
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { motion } from "framer-motion";
 import { MonthlyTrend } from "@/types";
-import { formatCurrency } from "@/lib/utils";
-
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload?.length) {
-    return (
-      <div className="card px-3 py-2.5 text-xs space-y-1" style={{ boxShadow: "0 4px 12px rgba(13, 17, 23, 0.12)" }}>
-        <p className="font-semibold text-[var(--text-primary)]">{label}</p>
-        {payload.map((p: any) => (
-          <p key={p.name} style={{ color: p.color }} className="num">
-            {p.name}: {formatCurrency(p.value)}
-          </p>
-        ))}
-      </div>
-    );
-  }
-  return null;
-};
+import { useCurrency } from "@/components/layout/CurrencyProvider";
 
 export function TrendChart({ data, isLoading }: { data: MonthlyTrend[]; isLoading?: boolean }) {
+  const { fmt } = useCurrency();
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload?.length) {
+      return (
+        <div className="card px-3 py-2.5 text-xs space-y-1" style={{ boxShadow: "0 4px 12px rgba(13, 17, 23, 0.12)" }}>
+          <p className="font-semibold text-[var(--text-primary)]">{label}</p>
+          {payload.map((p: any) => (
+            <p key={p.name} style={{ color: p.color }} className="num">
+              {p.name}: {fmt(p.value)}
+            </p>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
+
   if (isLoading) {
     return (
       <div className="card p-5">

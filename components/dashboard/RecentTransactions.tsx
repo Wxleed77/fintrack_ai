@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
+import { useCurrency } from "@/components/layout/CurrencyProvider";
 import { Transaction } from "@/types";
 import { ArrowUpRight, ArrowDownRight, ExternalLink } from "lucide-react";
 
@@ -17,6 +18,7 @@ const fadeSlide = {
 };
 
 export function RecentTransactions({ transactions, isLoading }: { transactions: Transaction[]; isLoading?: boolean }) {
+  const { fmt } = useCurrency();
   if (isLoading) {
     return (
       <div className="card p-5 space-y-3">
@@ -75,7 +77,7 @@ export function RecentTransactions({ transactions, isLoading }: { transactions: 
               <span className={`text-sm font-semibold num ${
                 txn.type === "INCOME" ? "text-teal-500" : "text-coral-500"
               }`}>
-                {txn.type === "INCOME" ? "+" : "-"}{formatCurrency(txn.amount)}
+                {txn.type === "INCOME" ? "+" : "-"}{fmt(txn.amount)}
               </span>
             </motion.div>
           ))

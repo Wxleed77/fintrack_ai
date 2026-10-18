@@ -33,10 +33,13 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const data = schema.parse(body);
 
+    const { limitAmount, category, month, year } = data;
     const budget = await prisma.budget.upsert({
-      where: { userId_category_month_year: { userId: session.user.id, ...data } },
-      update: { limitAmount: data.limitAmount },
-      create: { ...data, userId: session.user.id },
+      where: {
+        userId_category_month_year: { userId: session.user.id, category, month, year },
+      },
+      update: { limitAmount },
+      create: { userId: session.user.id, category, limitAmount, month, year },
     });
     return NextResponse.json(budget, { status: 201 });
   } catch (err) {

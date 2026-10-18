@@ -1,10 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { User, Lock, Bell, Check, Loader2, Shield, Sliders } from "lucide-react";
+import { toast } from "@/lib/toast";
 
 export default function SettingsPage() {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const [activeTab, setActiveTab] = useState("profile");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -24,6 +25,24 @@ export default function SettingsPage() {
     emailNotifications: true,
     currencyFormat: "PKR",
   });
+  const [prefsSaving, setPrefsSaving] = useState(false);
+
+  // Load persisted preferences: currency from the profile API, notifications from localStorage
+  useEffect(() => {
+    fetch("/api/user/profile")
+      .then(r => (r.ok ? r.json() : Promise.reject(new Error("unauthorized"))))
+      .then(user =>
+        setPreferences(p => ({
+          ...p,
+          currencyFormat: user.currency || "PKR",
+        }))
+      )
+      .catch(() => { /* fall back to defaults */ });
+    try {
+      const saved = window.localStorage.getItem("fin:prefs:emailNotifications");
+      if (saved !== null) setPreferences(p => ({ ...p, emailNotifications: saved === "true" }));
+    } catch { /* ignore */ }
+  }, []);
 
   const showMsg = (type: "success" | "error", text: string) => {
     setMessage({ type, text });
@@ -39,7 +58,20 @@ export default function SettingsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(profile),
       });
-      showMsg(res.ok ? "success" : "error", res.ok ? "Profile updated" : "Failed to update");
+      if (res.ok) {
+        showMsg("success", "Profile updated");
+        toast("Profile updated", { type: "success" });
+        await update({ name: profile.name });
+      } else {
+        let text = "Failed to update";
+        try {
+          const data = await res.json();
+          if (typeof data?.error === "string") text = data.error;
+        } catch { /* non-JSON body */
+        }
+        showMsg("error", text);
+        toast(text, { type: "error" });
+      }
     } catch {
       showMsg("error", "An error occurred");
     } finally {
@@ -62,14 +94,55 @@ export default function SettingsPage() {
       });
       if (res.ok) {
         showMsg("success", "Password changed");
+        toast("Password changed", { type: "success" });
         setPassword({ current: "", new: "", confirm: "" });
       } else {
-        showMsg("error", "Failed to change password");
+        let text = "Failed to change password";
+        try {
+          const data = await res.json();
+          if (typeof data?.error === "string") text = data.error;
+        } catch { /* non-JSON body */
+        }
+        showMsg("error", text);
       }
     } catch {
       showMsg("error", "An error occurred");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePreferencesSave = async () => {
+    setPrefsSaving(true);
+    try {
+      const res = await fetch("/api/user/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          currency: preferences.currencyFormat,
+        }),
+      });
+      if (res.ok) {
+        try {
+          window.localStorage.setItem("fin:prefs:emailNotifications", String(preferences.emailNotifications));
+        } catch { /* ignore */ }
+        showMsg("success", "Preferences saved");
+        toast("Preferences saved", { type: "success" });
+        // Propagate the new currency to the client session immediately
+        await update({ currency: preferences.currencyFormat });
+      } else {
+        let text = "Failed to save preferences";
+        try {
+          const data = await res.json();
+          if (typeof data?.error === "string") text = data.error;
+        } catch { /* non-JSON body */
+        }
+        showMsg("error", text);
+      }
+    } catch {
+      showMsg("error", "An error occurred");
+    } finally {
+      setPrefsSaving(false);
     }
   };
 
@@ -250,7 +323,24 @@ export default function SettingsPage() {
                 <option value="EUR">Euro (EUR)</option>
                 <option value="GBP">British Pound (GBP)</option>
               </select>
+              <p className="text-xs text-[var(--text-tertiary)]">
+                Applies to all amounts across the app
+              </p>
             </div>
+
+            <button type="button" onClick={handlePreferencesSave} disabled={prefsSaving} className="btn-primary">
+              {prefsSaving ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Saving...
+                </span>
+              ) : (
+                <>
+                  <Check className="h-4 w-4" />
+                  Save Preferences
+                </>
+              )}
+            </button>
           </div>
         </div>
       )}

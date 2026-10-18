@@ -10,7 +10,7 @@ export function formatCurrency(amount: number, currency = "PKR"): string {
     style: "currency",
     currency,
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    maximumFractionDigits: 2,
   }).format(amount);
 }
 

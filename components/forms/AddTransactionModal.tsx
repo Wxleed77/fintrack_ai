@@ -1,16 +1,19 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion } from "framer-motion";
 import { X, Loader2 } from "lucide-react";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES, PAYMENT_METHODS } from "@/lib/utils";
+import { useCurrency } from "@/components/layout/CurrencyProvider";
+import { handleResponse, toast } from "@/lib/toast";
+import { Transaction } from "@/types";
 
 const schema = z.object({
   type: z.enum(["INCOME", "EXPENSE"]),
   category: z.string().min(1),
-  amount: z.number().positive("Amount must be positive"),
+  amount: z.number().min(0.01, "Amount must be greater than 0"),
   description: z.string().min(1, "Description is required"),
   date: z.string(),
   paymentMethod: z.string(),
@@ -19,14 +22,44 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-interface Props { onClose: () => void; onSuccess: () => void }
+interface Props {
+  onClose: () => void;
+  onSuccess: () => void;
+  transaction?: Transaction;
+}
 
-export function AddTransactionModal({ onClose, onSuccess }: Props) {
+function toInputDate(date: string | Date): string {
+  return new Date(date).toISOString().split("T")[0];
+}
+
+export function AddTransactionModal({ onClose, onSuccess, transaction }: Props) {
   const [loading, setLoading] = useState(false);
+  const { currency } = useCurrency();
   const { register, handleSubmit, watch, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { type: "EXPENSE", date: new Date().toISOString().split("T")[0], paymentMethod: "cash" },
+    defaultValues: transaction
+      ? {
+          type: transaction.type,
+          category: transaction.category,
+          amount: transaction.amount,
+          description: transaction.description,
+          date: toInputDate(transaction.date),
+          paymentMethod: transaction.paymentMethod,
+          notes: transaction.notes || undefined,
+        }
+      : { type: "EXPENSE", date: new Date().toISOString().split("T")[0], paymentMethod: "cash" },
   });
+
+  const isEdit = Boolean(transaction);
+
+  // Close on Escape, trap background interaction politely
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
 
   const type = watch("type");
   const categories = type === "INCOME" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
@@ -34,13 +67,32 @@ export function AddTransactionModal({ onClose, onSuccess }: Props) {
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     try {
-      await fetch("/api/transactions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+      const res = await fetch(
+        isEdit ? `/api/transactions/${transaction!.id}` : "/api/transactions",
+        {
+          method: isEdit ? "PUT" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        }
+      );
+      await handleResponse(res, isEdit ? "Failed to update transaction" : "Failed to add transaction");
+      toast(isEdit ? "Transaction updated" : "Transaction added", { type: "success" });
       onSuccess();
-    } finally { setLoading(false); }
+    } catch {
+      /* handled */
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 animate-fade-in" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 animate-fade-in"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label={isEdit ? "Edit transaction" : "Add transaction"}
+    >
       <motion.div
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -51,9 +103,12 @@ export function AddTransactionModal({ onClose, onSuccess }: Props) {
       >
         {/* Header */}
         <div className="flex justify-between items-center mb-5">
-          <h2 className="text-lg font-display font-semibold text-[var(--text-primary)]">Add Transaction</h2>
+          <h2 className="text-lg font-display font-semibold text-[var(--text-primary)]">
+            {isEdit ? "Edit Transaction" : "Add Transaction"}
+          </h2>
           <button
             onClick={onClose}
+            aria-label="Close"
             className="btn-ghost p-1.5 rounded-md"
           >
             <X className="h-5 w-5" />
@@ -81,9 +136,11 @@ export function AddTransactionModal({ onClose, onSuccess }: Props) {
 
           {/* Amount */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-medium text-[var(--text-secondary)]">Amount (PKR)</label>
+            <label className="block text-xs font-medium text-[var(--text-secondary)]">Amount ({currency})</label>
             <input
               type="number"
+              step="0.01"
+              min="0"
               {...register("amount", { valueAsNumber: true })}
               placeholder="0"
               className="input text-lg font-semibold num"
@@ -110,6 +167,7 @@ export function AddTransactionModal({ onClose, onSuccess }: Props) {
                 <option value="">Select...</option>
                 {categories.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
+              {errors.category && <p className="text-xs text-coral-500 mt-1">{errors.category.message}</p>}
             </div>
             <div className="space-y-1.5">
               <label className="block text-xs font-medium text-[var(--text-secondary)]">Date</label>
@@ -148,7 +206,7 @@ export function AddTransactionModal({ onClose, onSuccess }: Props) {
                 Saving...
               </span>
             ) : (
-              "Add Transaction"
+              isEdit ? "Save Changes" : "Add Transaction"
             )}
           </motion.button>
         </form>

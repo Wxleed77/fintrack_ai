@@ -1,6 +1,6 @@
 "use client";
 import { signOut } from "next-auth/react";
-import { Bell, LogOut, Moon, Sun, Plus } from "lucide-react";
+import { LogOut, Moon, Sun, Plus } from "lucide-react";
 import { useCallback, useState } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "./ThemeProvider";
@@ -8,6 +8,14 @@ import { AddTransactionModal } from "@/components/forms/AddTransactionModal";
 
 interface HeaderProps {
   user: { name?: string | null; email?: string | null; image?: string | null };
+}
+
+function getGreeting(hour: number): string {
+  if (hour < 5) return "Good night";
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  if (hour < 21) return "Good evening";
+  return "Good night";
 }
 
 export function Header({ user }: HeaderProps) {
@@ -20,16 +28,18 @@ export function Header({ user }: HeaderProps) {
     window.dispatchEvent(new CustomEvent("fin:data-change"));
   }, []);
 
+  const now = new Date();
+
   return (
     <>
       <header className="sticky top-0 z-30 bg-[var(--bg-card)] border-b border-[var(--border-card)] px-4 lg:px-6 py-3 flex items-center justify-between">
         {/* Left */}
         <div className="hidden lg:block">
           <h2 className="text-sm font-medium text-[var(--text-primary)]">
-            Good morning, {user.name?.split(" ")[0]}
+            {getGreeting(now.getHours())}, {user.name?.split(" ")[0]}
           </h2>
           <p className="text-xs text-[var(--text-tertiary)]">
-            {new Date().toLocaleDateString("en-PK", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+            {now.toLocaleDateString("en-PK", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
           </p>
         </div>
 
@@ -46,17 +56,10 @@ export function Header({ user }: HeaderProps) {
 
           <motion.button
             whileTap={{ scale: 0.95 }}
-            className="btn-ghost p-2 rounded-md relative"
-          >
-            <Bell className="h-4.5 w-4.5" />
-            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-coral-500 rounded-full" />
-          </motion.button>
-
-          <motion.button
-            whileTap={{ scale: 0.95 }}
             onClick={toggleTheme}
             className="btn-ghost p-2 rounded-md"
             title="Toggle theme"
+            aria-label="Toggle dark mode"
           >
             {theme === "light" ? <Moon className="h-4.5 w-4.5" /> : <Sun className="h-4.5 w-4.5" />}
           </motion.button>
@@ -70,6 +73,7 @@ export function Header({ user }: HeaderProps) {
               onClick={() => signOut({ callbackUrl: "/auth/login" })}
               className="btn-ghost p-2 rounded-md text-[var(--text-tertiary)] hover:text-coral-500"
               title="Sign out"
+              aria-label="Sign out"
             >
               <LogOut className="h-4 w-4" />
             </motion.button>

@@ -1,7 +1,7 @@
 "use client";
 import { TrendingUp, TrendingDown, DollarSign, PiggyBank } from "lucide-react";
 import { motion } from "framer-motion";
-import { formatCurrency } from "@/lib/utils";
+import { useCurrency } from "@/components/layout/CurrencyProvider";
 import { useCountUp } from "@/hooks/useCountUp";
 
 interface Props {
@@ -47,24 +47,25 @@ function StatCard({
 }
 
 export function StatsCards({ summary, isLoading }: Props) {
+  const { fmt } = useCurrency();
   const cards = [
     {
       label: "Monthly Income",
-      value: formatCurrency(summary?.income || 0),
+      value: fmt(summary?.income || 0),
       icon: TrendingUp,
       accentColor: "text-teal-500",
       barColor: "#14b8a6",
     },
     {
       label: "Monthly Expenses",
-      value: formatCurrency(summary?.expenses || 0),
+      value: fmt(summary?.expenses || 0),
       icon: TrendingDown,
       accentColor: "text-coral-500",
       barColor: "#fb7185",
     },
     {
       label: "Net Savings",
-      value: formatCurrency(summary?.savings || 0),
+      value: fmt(summary?.savings || 0),
       icon: DollarSign,
       accentColor: "text-indigo-500",
       barColor: "#4f6ef7",

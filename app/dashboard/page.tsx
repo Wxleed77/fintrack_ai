@@ -28,7 +28,7 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const mountedRef = useRef(true);
 
-  const fetchDashboard = useCallback(() => {
+  const fetchDashboard = useCallback((bust = false) => {
     if (!mountedRef.current) return;
     setIsLoading(true);
 
@@ -36,7 +36,7 @@ export default function DashboardPage() {
     const month = now.getMonth() + 1;
     const year = now.getFullYear();
 
-    dashboardCache.clear();
+    if (bust) dashboardCache.clear();
 
     Promise.all([
       getCachedData("analytics", () =>
@@ -69,7 +69,7 @@ export default function DashboardPage() {
     mountedRef.current = true;
     fetchDashboard();
 
-    const handler = () => fetchDashboard();
+    const handler = () => fetchDashboard(true);
     window.addEventListener("fin:data-change", handler);
     return () => {
       mountedRef.current = false;

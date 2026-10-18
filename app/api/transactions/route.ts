@@ -36,6 +36,10 @@ export async function GET(req: NextRequest) {
   const where: any = { userId: session.user.id };
   if (type) where.type = type;
   if (category) where.category = category;
+  const search = searchParams.get("search");
+  if (search) {
+    where.description = { contains: search, mode: "insensitive" };
+  }
   if (month && year) {
     const start = new Date(parseInt(year), parseInt(month) - 1, 1);
     const end = new Date(parseInt(year), parseInt(month), 0, 23, 59, 59);

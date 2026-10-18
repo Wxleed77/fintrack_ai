@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { SavingsGoal } from "@/types";
-import { formatCurrency } from "@/lib/utils";
+import { useCurrency } from "@/components/layout/CurrencyProvider";
 import { Target, ExternalLink } from "lucide-react";
 
 function AnimatedBar({ pct, color }: { pct: number; color: string }) {
@@ -18,6 +18,7 @@ function AnimatedBar({ pct, color }: { pct: number; color: string }) {
 }
 
 export function GoalsWidget({ goals, isLoading }: { goals: SavingsGoal[]; isLoading?: boolean }) {
+  const { fmt } = useCurrency();
   if (isLoading) {
     return (
       <div className="card p-5 space-y-4">
@@ -73,7 +74,7 @@ export function GoalsWidget({ goals, isLoading }: { goals: SavingsGoal[]; isLoad
                 <AnimatedBar pct={pct} color={goal.color} />
               </div>
               <p className="text-xs text-[var(--text-tertiary)] mt-1.5 num">
-                {formatCurrency(goal.currentAmount)} of {formatCurrency(goal.targetAmount)}
+                {fmt(goal.currentAmount)} of {fmt(goal.targetAmount)}
               </p>
             </motion.div>
           );
