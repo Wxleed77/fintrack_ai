@@ -4,12 +4,14 @@ import { motion } from "framer-motion";
 import { formatDate } from "@/lib/utils";
 import { useCurrency } from "@/components/layout/CurrencyProvider";
 import { useCategories } from "@/components/layout/CategoriesProvider";
-import { handleResponse, toast, toastError } from "@/lib/toast";
+import { handleResponse } from "@/lib/toast";
 import { Transaction } from "@/types";
 import { AddTransactionModal } from "@/components/forms/AddTransactionModal";
+import { downloadCSV, toCSV } from "@/lib/csv";
+import { toast, toastError } from "@/lib/toast";
 import {
   ArrowUpRight, ArrowDownRight, Trash2, Filter, Search,
-  Pencil, ChevronLeft, ChevronRight, Plus,
+  Pencil, ChevronLeft, ChevronRight, Plus, Download,
 } from "lucide-react";
 
 const PAGE_SIZE = 20;
@@ -47,6 +49,55 @@ export default function TransactionsPage() {
   });
   const [editing, setEditing] = useState<Transaction | null>(null);
   const [adding, setAdding] = useState(false);
+  const [exporting, setExporting] = useState(false);
+
+  const exportCSV = async () => {
+    setExporting(true);
+    try {
+      // Fetch every page that matches the current filters (capped for safety)
+      const all: Transaction[] = [];
+      let exportPage = 1;
+      let exportTotal = Infinity;
+      while (all.length < exportTotal && all.length < 1000) {
+        const params = new URLSearchParams();
+        params.set("page", String(exportPage));
+        params.set("limit", "100");
+        params.set("month", String(period.month));
+        params.set("year", String(period.year));
+        if (filter.type) params.set("type", filter.type);
+        if (filter.category) params.set("category", filter.category);
+        if (search) params.set("search", search);
+        const res = await fetch(`/api/transactions?${params}`);
+        if (!res.ok) {
+          toastError("Export failed — please try again");
+          return;
+        }
+        const data = await res.json();
+        exportTotal = data.total || 0;
+        all.push(...(data.transactions || []));
+        exportPage++;
+      }
+
+      const csv = toCSV(
+        ["Date", "Type", "Category", "Description", "Payment Method", "Amount", "Notes"],
+        all.map(t => [
+          new Date(t.date).toISOString().split("T")[0],
+          t.type,
+          t.category,
+          t.description,
+          t.paymentMethod,
+          String(t.amount),
+          t.notes || "",
+        ])
+      );
+      downloadCSV(`transactions-${period.year}-${String(period.month).padStart(2, "0")}.csv`, csv);
+      toast(`Exported ${all.length} transaction${all.length === 1 ? "" : "s"}`, { type: "success" });
+    } catch {
+      toastError("Export failed — please try again");
+    } finally {
+      setExporting(false);
+    }
+  };
 
   // Debounce search input
   useEffect(() => {
@@ -162,14 +213,26 @@ export default function TransactionsPage() {
           <h1 className="text-2xl font-display font-bold text-[var(--text-primary)]">Transactions</h1>
           <p className="text-sm text-[var(--text-secondary)] mt-1">{total} record{total === 1 ? "" : "s"} in {MONTHS[period.month - 1]} {period.year}</p>
         </div>
-        <motion.button
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setAdding(true)}
-          className="btn-primary text-sm"
-        >
-          <Plus className="h-4 w-4" />
-          Add Transaction
-        </motion.button>
+        <div className="flex items-center gap-2">
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={exportCSV}
+            disabled={exporting}
+            className="btn-ghost text-sm border border-[var(--border-card)]"
+            title="Export current view to CSV"
+          >
+            <Download className="h-4 w-4" />
+            {exporting ? "Exporting..." : "Export"}
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setAdding(true)}
+            className="btn-primary text-sm"
+          >
+            <Plus className="h-4 w-4" />
+            Add Transaction
+          </motion.button>
+        </div>
       </div>
 
       {/* Filters */}
