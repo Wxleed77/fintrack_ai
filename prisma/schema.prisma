@@ -24,6 +24,7 @@ model User {
   budgets       Budget[]
   goals         SavingsGoal[]
   subscriptions Subscription[]
+  categories    Category[]
 
   @@map("users")
 }
@@ -142,6 +143,21 @@ model Subscription {
   @@map("subscriptions")
 }
 
+model Category {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  type      CategoryType
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@map("categories")
+}
+
 enum TransactionType {
   INCOME
   EXPENSE
@@ -151,4 +167,9 @@ enum SubscriptionFreq {
   WEEKLY
   MONTHLY
   YEARLY
+}
+
+enum CategoryType {
+  INCOME
+  EXPENSE
 }

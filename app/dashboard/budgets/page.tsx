@@ -1,8 +1,9 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { getMonthName, EXPENSE_CATEGORIES } from "@/lib/utils";
+import { getMonthName } from "@/lib/utils";
 import { useCurrency } from "@/components/layout/CurrencyProvider";
+import { useCategories } from "@/components/layout/CategoriesProvider";
 import { toast, toastError, handleResponse } from "@/lib/toast";
 import { Budget, CategoryBreakdown } from "@/types";
 import { motion } from "framer-motion";
@@ -10,6 +11,7 @@ import { Wallet, Plus, Loader2, Trash2 } from "lucide-react";
 
 export default function BudgetsPage() {
   const { fmt, currency } = useCurrency();
+  const { expenseCategories } = useCategories();
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [spentByCategory, setSpentByCategory] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
@@ -133,7 +135,7 @@ export default function BudgetsPage() {
         <h3 className="font-display font-semibold text-[var(--text-primary)] mb-4">Set Monthly Budget</h3>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col sm:flex-row gap-3">
           <select {...register("category", { required: true })} className="select flex-1">
-            {EXPENSE_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+            {expenseCategories.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
           <input
             type="number"

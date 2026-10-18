@@ -55,3 +55,15 @@ export const CATEGORY_COLORS: Record<string, string> = {
   Education: "#0F6E56", Salary: "#1D9E75", Freelancing: "#378ADD",
   Business: "#7F77DD", Investment: "#EF9F27", Other: "#888780",
 };
+
+const FALLBACK_PALETTE = [
+  "#4F6EF7", "#14B8A6", "#EF9F27", "#D4537E",
+  "#8B5CF6", "#0F6E56", "#D85A30", "#378ADD",
+];
+
+/** Deterministic color so a custom category keeps the same chart color every visit */
+export function categoryColor(name: string): string {
+  if (CATEGORY_COLORS[name]) return CATEGORY_COLORS[name];
+  const hash = [...name].reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
+  return FALLBACK_PALETTE[hash % FALLBACK_PALETTE.length];
+}

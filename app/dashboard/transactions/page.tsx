@@ -1,8 +1,9 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { formatDate, INCOME_CATEGORIES, EXPENSE_CATEGORIES } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import { useCurrency } from "@/components/layout/CurrencyProvider";
+import { useCategories } from "@/components/layout/CategoriesProvider";
 import { handleResponse, toast, toastError } from "@/lib/toast";
 import { Transaction } from "@/types";
 import { AddTransactionModal } from "@/components/forms/AddTransactionModal";
@@ -31,6 +32,7 @@ const MONTHS = [
 
 export default function TransactionsPage() {
   const { fmt } = useCurrency();
+  const { expenseCategories, incomeCategories } = useCategories();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [total, setTotal] = useState(0);
   const [pages, setPages] = useState(1);
@@ -143,9 +145,9 @@ export default function TransactionsPage() {
 
   // Category options respect the selected type filter
   const categoryOptions: string[] =
-    filter.type === "INCOME" ? INCOME_CATEGORIES
-      : filter.type === "EXPENSE" ? EXPENSE_CATEGORIES
-      : [...INCOME_CATEGORIES, ...EXPENSE_CATEGORIES];
+    filter.type === "INCOME" ? incomeCategories
+      : filter.type === "EXPENSE" ? expenseCategories
+      : [...incomeCategories, ...expenseCategories];
 
   return (
     <motion.div

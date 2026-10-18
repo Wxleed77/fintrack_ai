@@ -224,94 +224,118 @@ fintrack-ai/
 ### Users Table
 ```typescript
 model User {
-  id                    String    @id @default(cuid())
-  name                  String?
-  email                 String    @unique
-  emailVerified         DateTime?
-  password              String
-  image                 String?
-  currency              String    @default("PKR")
-  notificationsEnabled  Boolean   @default(true)
-  createdAt            DateTime   @default(now())
-  updatedAt            DateTime   @updatedAt
-  
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  currency      String    @default("PKR")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
   // Relations
-  accounts              Account[]
-  sessions              Session[]
-  transactions          Transaction[]
-  budgets               Budget[]
-  savingsGoals          SavingsGoal[]
-  subscriptions         Subscription[]
+  accounts      Account[]
+  sessions      Session[]
+  transactions  Transaction[]
+  budgets       Budget[]
+  goals         SavingsGoal[]
+  subscriptions Subscription[]
+  categories    Category[]
 }
 ```
 
 ### Transactions Table
 ```typescript
 model Transaction {
-  id              String    @id @default(cuid())
-  userId          String
-  type            String    // "INCOME" | "EXPENSE"
-  amount          Float
-  category        String
-  description     String
-  date            DateTime
-  paymentMethod   String    // "CASH" | "CARD" | "TRANSFER" | "OTHER"
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            String          @id @default(cuid())
+  userId        String
+  type          TransactionType // INCOME | EXPENSE (enum)
+  category      String
+  amount        Float
+  description   String
+  date          DateTime
+  paymentMethod String          @default("cash")
+  notes         String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, date])
+  @@index([userId, type])
 }
 ```
 
 ### Budgets Table
 ```typescript
 model Budget {
-  id              String    @id @default(cuid())
-  userId          String
-  category        String
-  limitAmount     Float
-  month           Int
-  year            Int
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String   @id @default(cuid())
+  userId      String
+  category    String
+  limitAmount Float
+  month       Int
+  year        Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, category, month, year])
 }
 ```
 
 ### SavingsGoals Table
 ```typescript
 model SavingsGoal {
-  id              String    @id @default(cuid())
-  userId          String
-  name            String
-  targetAmount    Float
-  currentAmount   Float     @default(0)
-  targetDate      DateTime
-  category        String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            String    @id @default(cuid())
+  userId        String
+  goalName      String
+  targetAmount  Float
+  currentAmount Float     @default(0)
+  deadline      DateTime?
+  icon          String    @default("target")
+  color         String    @default("#1D9E75")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 ```
 
 ### Subscriptions Table
 ```typescript
 model Subscription {
-  id              String    @id @default(cuid())
-  userId          String
-  name            String
-  amount          Float
-  billingCycle    String    // "MONTHLY" | "YEARLY"
-  category        String
-  startDate       DateTime
-  nextBillingDate DateTime
-  isActive        Boolean   @default(true)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String           @id @default(cuid())
+  userId      String
+  serviceName String
+  cost        Float
+  billingDate Int
+  frequency   SubscriptionFreq // WEEKLY | MONTHLY | YEARLY (enum)
+  category    String           @default("Entertainment")
+  isActive    Boolean          @default(true)
+  icon        String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+```
+
+### Custom Categories Table
+```typescript
+model Category {
+  id        String       @id @default(cuid())
+  userId    String
+  name      String
+  type      CategoryType // INCOME | EXPENSE (enum)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, name])
 }
 ```
 
@@ -333,17 +357,16 @@ GET    /api/auth/session               # Get current session
 
 ### Transactions
 ```
-GET    /api/transactions               # List user transactions (with filters)
+GET    /api/transactions               # List user transactions (filters: month, year, type, category, search + pagination)
 POST   /api/transactions               # Create transaction
-GET    /api/transactions/[id]          # Get transaction details
+PUT    /api/transactions/[id]          # Update transaction
 DELETE /api/transactions/[id]          # Delete transaction
 ```
 
 ### Budgets
 ```
 GET    /api/budgets                    # List user budgets for month
-POST   /api/budgets                    # Create budget
-GET    /api/budgets/[id]               # Get budget details
+POST   /api/budgets                    # Create or upsert budget
 DELETE /api/budgets/[id]               # Delete budget
 ```
 
@@ -363,6 +386,13 @@ PUT    /api/subscriptions/[id]         # Update subscription
 DELETE /api/subscriptions/[id]         # Delete subscription
 ```
 
+### Categories
+```
+GET    /api/categories                 # List user's custom categories
+POST   /api/categories                 # Create custom category
+DELETE /api/categories/[id]            # Delete custom category
+```
+
 ### Analytics
 ```
 GET    /api/analytics                  # Get analytics data (trends, breakdown)
@@ -375,7 +405,8 @@ POST   /api/ai                         # Generate AI financial insights
 
 ### User Settings
 ```
-PUT    /api/user/profile               # Update user profile
+GET    /api/user/profile               # Get user profile (name, email, currency)
+PUT    /api/user/profile               # Update user profile (name, currency)
 PUT    /api/user/password              # Change password
 ```
 

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { CATEGORY_COLORS } from "@/lib/utils";
+import { categoryColor } from "@/lib/utils";
 
 export const dynamic = 'force-dynamic';
 
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
     category,
     amount,
     percentage: expenses > 0 ? Math.round((amount / expenses) * 100) : 0,
-    color: (CATEGORY_COLORS as Record<string, string>)[category] || "#888780",
+    color: categoryColor(category),
   })).sort((a, b) => b.amount - a.amount);
 
   // 6-month trend

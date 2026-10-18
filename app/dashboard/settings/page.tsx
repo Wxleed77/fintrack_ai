@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { User, Lock, Bell, Check, Loader2, Shield, Sliders } from "lucide-react";
+import { User, Lock, Bell, Check, Loader2, Shield, Sliders, Tags, Trash2, Plus } from "lucide-react";
 import { toast } from "@/lib/toast";
+import { useCategories } from "@/components/layout/CategoriesProvider";
 
 export default function SettingsPage() {
   const { data: session, update } = useSession();
@@ -26,6 +27,20 @@ export default function SettingsPage() {
     currencyFormat: "PKR",
   });
   const [prefsSaving, setPrefsSaving] = useState(false);
+
+  const { customCategories, addCategory, deleteCategory } = useCategories();
+  const [newCategory, setNewCategory] = useState({ name: "", type: "EXPENSE" as "INCOME" | "EXPENSE" });
+  const [catAdding, setCatAdding] = useState(false);
+
+  const handleCategoryAdd = async () => {
+    if (!newCategory.name.trim()) return;
+    setCatAdding(true);
+    const created = await addCategory(newCategory.name, newCategory.type);
+    setCatAdding(false);
+    if (created) {
+      setNewCategory({ name: "", type: newCategory.type });
+    }
+  };
 
   // Load persisted preferences: currency from the profile API, notifications from localStorage
   useEffect(() => {
@@ -150,6 +165,7 @@ export default function SettingsPage() {
     { id: "profile", label: "Profile", icon: User },
     { id: "security", label: "Security", icon: Shield },
     { id: "preferences", label: "Preferences", icon: Sliders },
+    { id: "categories", label: "Categories", icon: Tags },
   ];
 
   return (
@@ -342,6 +358,83 @@ export default function SettingsPage() {
               )}
             </button>
           </div>
+        </div>
+      )}
+      {/* Categories Tab */}
+      {activeTab === "categories" && (
+        <div className="card p-6">
+          <h2 className="font-display font-semibold text-[var(--text-primary)] mb-1">Categories</h2>
+          <p className="text-xs text-[var(--text-tertiary)] mb-6">
+            Extension of the built-in Income/Expense categories. Existing transactions keep working if a category is deleted.
+          </p>
+
+          {/* Add form */}
+          <div className="flex flex-col sm:flex-row gap-3 max-w-md mb-8">
+            <select
+              value={newCategory.type}
+              onChange={e => setNewCategory({ ...newCategory, type: e.target.value as "INCOME" | "EXPENSE" })}
+              className="select w-auto"
+              aria-label="Category type"
+            >
+              <option value="EXPENSE">Expense</option>
+              <option value="INCOME">Income</option>
+            </select>
+            <input
+              type="text"
+              value={newCategory.name}
+              onChange={e => setNewCategory({ ...newCategory, name: e.target.value })}
+              onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); handleCategoryAdd(); } }}
+              placeholder="Category name (e.g. Groceries)"
+              className="input flex-1"
+              maxLength={30}
+            />
+            <button
+              type="button"
+              onClick={handleCategoryAdd}
+              disabled={catAdding || !newCategory.name.trim()}
+              className="btn-primary whitespace-nowrap"
+            >
+              {catAdding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+              Add
+            </button>
+          </div>
+
+          {customCategories.length === 0 ? (
+            <p className="text-sm text-[var(--text-tertiary)] py-6 text-center">
+              No custom categories yet — you can also add them inline while logging a transaction
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {customCategories.map(cat => (
+                <div
+                  key={cat.id}
+                  className="flex items-center justify-between px-4 py-3 rounded-md border border-[var(--border-card)]"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span
+                      className={`text-2xs font-medium px-2 py-0.5 rounded-full flex-shrink-0 ${
+                        cat.type === "INCOME"
+                          ? "bg-teal-500/10 text-teal-500"
+                          : "bg-coral-500/10 text-coral-500"
+                      }`}
+                    >
+                      {cat.type === "INCOME" ? "Income" : "Expense"}
+                    </span>
+                    <span className="text-sm text-[var(--text-primary)] truncate">{cat.name}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => deleteCategory(cat.id)}
+                    aria-label={`Delete ${cat.name}`}
+                    title="Delete category"
+                    className="p-2 rounded-md text-[var(--text-tertiary)] hover:text-coral-500 hover:bg-coral-500/10 transition-all duration-150"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

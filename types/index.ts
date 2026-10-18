@@ -46,6 +46,13 @@ export interface Subscription {
   icon?: string | null;
 }
 
+export interface CustomCategory {
+  id: string;
+  userId: string;
+  name: string;
+  type: TransactionType;
+}
+
 export interface DashboardStats {
   totalBalance: number;
   monthlyIncome: number;

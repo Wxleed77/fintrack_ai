@@ -4,9 +4,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion } from "framer-motion";
-import { X, Loader2 } from "lucide-react";
-import { EXPENSE_CATEGORIES, INCOME_CATEGORIES, PAYMENT_METHODS } from "@/lib/utils";
+import { X, Loader2, Plus } from "lucide-react";
+import { PAYMENT_METHODS } from "@/lib/utils";
 import { useCurrency } from "@/components/layout/CurrencyProvider";
+import { useCategories } from "@/components/layout/CategoriesProvider";
 import { handleResponse, toast } from "@/lib/toast";
 import { Transaction } from "@/types";
 
@@ -35,7 +36,8 @@ function toInputDate(date: string | Date): string {
 export function AddTransactionModal({ onClose, onSuccess, transaction }: Props) {
   const [loading, setLoading] = useState(false);
   const { currency } = useCurrency();
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<FormData>({
+  const { expenseCategories, incomeCategories, addCategory } = useCategories();
+  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: transaction
       ? {
@@ -52,6 +54,26 @@ export function AddTransactionModal({ onClose, onSuccess, transaction }: Props) 
 
   const isEdit = Boolean(transaction);
 
+  // Inline custom-category creation
+  const [showCatInput, setShowCatInput] = useState(false);
+  const [newCategory, setNewCategory] = useState("");
+  const [addingCategory, setAddingCategory] = useState(false);
+
+  const handleAddCategory = async () => {
+    if (!newCategory.trim()) {
+      setShowCatInput(false);
+      return;
+    }
+    setAddingCategory(true);
+    const created = await addCategory(newCategory, type);
+    setAddingCategory(false);
+    if (created) {
+      setValue("category", created, { shouldValidate: true });
+      setNewCategory("");
+      setShowCatInput(false);
+    }
+  };
+
   // Close on Escape, trap background interaction politely
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -62,7 +84,7 @@ export function AddTransactionModal({ onClose, onSuccess, transaction }: Props) 
   }, [onClose]);
 
   const type = watch("type");
-  const categories = type === "INCOME" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+  const categories = type === "INCOME" ? incomeCategories : expenseCategories;
 
   const onSubmit = async (data: FormData) => {
     setLoading(true);
@@ -162,12 +184,49 @@ export function AddTransactionModal({ onClose, onSuccess, transaction }: Props) 
           {/* Category + Date */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="block text-xs font-medium text-[var(--text-secondary)]">Category</label>
+              <div className="flex items-center justify-between">
+                <label className="block text-xs font-medium text-[var(--text-secondary)]">Category</label>
+                <button
+                  type="button"
+                  onClick={() => setShowCatInput(v => !v)}
+                  className="flex items-center gap-0.5 text-2xs font-medium text-indigo-500 hover:text-indigo-600 transition-colors"
+                  aria-label="Add custom category"
+                >
+                  <Plus className="h-3 w-3" />
+                  Add
+                </button>
+              </div>
               <select {...register("category")} className="select">
                 <option value="">Select...</option>
                 {categories.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
               {errors.category && <p className="text-xs text-coral-500 mt-1">{errors.category.message}</p>}
+              {showCatInput && (
+                <div className="flex gap-1.5">
+                  <input
+                    autoFocus
+                    type="text"
+                    value={newCategory}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewCategory(e.target.value)}
+                    onKeyDown={(e: React.KeyboardEvent) => {
+                      if (e.key === "Enter") { e.preventDefault(); handleAddCategory(); }
+                      if (e.key === "Escape") setShowCatInput(false);
+                    }}
+                    placeholder="New category name"
+                    className="input text-xs py-1.5"
+                    maxLength={30}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddCategory}
+                    disabled={addingCategory}
+                    className="btn-primary px-2 py-1"
+                    aria-label="Save category"
+                  >
+                    {addingCategory ? <Loader2 className="h-3 w-3 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
+                  </button>
+                </div>
+              )}
             </div>
             <div className="space-y-1.5">
               <label className="block text-xs font-medium text-[var(--text-secondary)]">Date</label>
